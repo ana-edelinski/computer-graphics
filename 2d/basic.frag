@@ -1,9 +1,10 @@
 #version 330 core
 
-in vec4 chCol;
-out vec4 outCol;
+out vec4 FragColor;
+
+uniform vec3 color;
 
 void main()
 {
-	outCol = chCol;	//dodeljuje boju fragmentima (pikselima)
+    FragColor = vec4(color, 1.0); // Koristi uniform promenljivu za boju
 }

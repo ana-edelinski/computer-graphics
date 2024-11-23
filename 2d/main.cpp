@@ -1,7 +1,8 @@
-// Autor: Nedeljko Tesanovic
+﻿// Autor: Nedeljko Tesanovic
 // Opis: V3 Z4
 
 #define _CRT_SECURE_NO_WARNINGS
+#define CRES 100 
 
 #include <iostream>
 #include <fstream>
@@ -12,6 +13,17 @@
 
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
+
+// Funkcija za generisanje kruga
+void generateCircle(float* circleVertices, float centerX, float centerY, float radius) {
+    circleVertices[0] = centerX;  // Centar kruga
+    circleVertices[1] = centerY;
+    for (int i = 0; i <= CRES; i++) {
+        float angle = (2.0f * 3.141592f / CRES) * i;
+        circleVertices[2 + i * 2] = centerX + radius * cos(angle);
+        circleVertices[3 + i * 2] = centerY + radius * sin(angle);
+    }
+}
 
 int main(void)
 {
@@ -31,7 +43,7 @@ int main(void)
     GLFWwindow* window;
     unsigned int wWidth = 500;
     unsigned int wHeight = 500;
-    const char wTitle[] = "[Generic title]";    //naslov prozora
+    const char wTitle[] = "Radio";    //naslov prozora
     window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL, NULL);
     if (window == NULL)
     {
@@ -49,140 +61,156 @@ int main(void)
     }
 
 
-    //Crvena zvijezda
-    //ovde definisem verticles za zvezdu
-    float starVertices[] = {
-        //poz           r     g    b    a(providnost)
-        0.0, 0.5,       0.0, 0.0, 1.0, 1.0, //up
-        -0.3, -0.4,     0.0, 0.0, 1.0, 1.0, //down left
-        0.4, 0.2,        0.0, 0.0, 1.0, 1.0, //up right
-        -0.4, 0.2,      0.0, 0.0, 1.0, 1.0, //up left
-        0.3, -0.4,      0.0, 0.0, 1.0, 1.0 //down left
+    // Definisanje oblika radija
+    float radioBodyVertices[] = {
+        // X      Y
+        -0.8, -0.6,  // donji levi ugao
+         0.8, -0.6,  // donji desni ugao
+        -0.8,  0.2,  // gornji levi ugao
+         0.8,  0.2   // gornji desni ugao
     };
 
-    //Sarena traka
-    //kvadrat koji se definise kao dva trougla
-    float rectangleVertices[] = {
-        -0.1, -0.1,       1.0, 0.0, 0.0, 0.5,
-        -0.1, 0.1,       1.0, 0.0, 0.0, 0.5,
-        0.1, -0.1,       1.0, 0.0, 0.0, 0.5,
-        0.1, 0.1,       1.0, 0.0, 0.0, 0.5,
+    float antennaVertices[] = {
+        // X      Y
+        -0.75, 0.2,  // baza antene levo
+        -0.65, 0.2,  // baza antene desno
+        -0.75, 0.8,  // vrh antene levo
+        -0.65, 0.8   // vrh antene desno
     };
+
+    float leftSpeakerVertices[] = {
+        // X      Y
+        -0.6, -0.5,  // donji levi ugao
+        -0.2, -0.5,  // donji desni ugao
+        -0.6, -0.1,  // gornji levi ugao
+        -0.2, -0.1   // gornji desni ugao
+    };
+
+    float rightSpeakerVertices[] = {
+        // X      Y
+        0.2, -0.5,  // donji levi ugao
+        0.6, -0.5,  // donji desni ugao
+        0.2, -0.1,  // gornji levi ugao
+        0.6, -0.1   // gornji desni ugao
+    };
+
+    float leftMembraneVertices[(CRES + 2) * 2];
+    generateCircle(leftMembraneVertices, -0.4, -0.3, 0.15f);  // Centar (-0.4, -0.3), poluprečnik 0.15
+
+    float rightMembraneVertices[(CRES + 2) * 2];
+    generateCircle(rightMembraneVertices, 0.4, -0.3, 0.15f);  // Centar (0.4, -0.3), poluprečnik 0.15
     
-    unsigned int stride = 6 * sizeof(float);    //??
 
     //vertex array object cuva konfiguraciju vertiksa
-    unsigned VAO[2]; //0 - star, 1 - rectangle
-    glGenVertexArrays(2, VAO);
+    unsigned VAO[6]; 
+    glGenVertexArrays(6, VAO);
     //vertex buffer object je memorija u kojoj se vertiksi cuvaju na grafickoj kartici
-    unsigned VBO[2];
-    glGenBuffers(2, VBO);
+    unsigned VBO[6];
+    glGenBuffers(6, VBO);
 
     //povezujem podatke sa vao i vbo
-    glBindVertexArray(VAO[0]);  //aktiviram vao za zvezdu
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);  
-    glBufferData(GL_ARRAY_BUFFER, sizeof(starVertices), starVertices, GL_STATIC_DRAW);  //ucitam podatke u vbo
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);  //podesavam kako opengl cita poziciju (saljem poziciju vertiksa na ulaz)
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));    //i boje
-    glEnableVertexAttribArray(1);
 
+    // Telo radija
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioBodyVertices), radioBodyVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Antena
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(antennaVertices), antennaVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+
+    // Levi zvučnik
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerVertices), leftSpeakerVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Desni zvučnik
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerVertices), rightSpeakerVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Leva membrana
+    glBindVertexArray(VAO[4]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(leftMembraneVertices), leftMembraneVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Desna membrana
+    glBindVertexArray(VAO[5]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rightMembraneVertices), rightMembraneVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    float x = 0;
-    float y = 0;
+    //float x = 0;
+    //float y = 0;
     unsigned int basicShader = createShader("basic.vert", "basic.frag");    //kreiram sejder tj povezujem sejdere u jedan sejderski program
-    unsigned int uPosLoc = glGetUniformLocation(basicShader, "uPos"); //Mora biti POSLE pravljenja sejdera, inace ta uniforma ne postoji, kao i sejder
+    //unsigned int uPosLoc = glGetUniformLocation(basicShader, "uPos"); //Mora biti POSLE pravljenja sejdera, inace ta uniforma ne postoji, kao i sejder
+    unsigned int uColorLoc = glGetUniformLocation(basicShader, "color");    //za boje
 
     glPointSize(4);
 
-    //rendering loop
+    // Glavna petlja
     while (!glfwWindowShouldClose(window))
     {
-        glfwPollEvents();   //proverava dogadjaje
-
-        //reaguje na tastere
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)  //esc zatvara program
-            glfwSetWindowShouldClose(window, GL_TRUE);
-
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)  //strelica gore pomera kvadrat
-        {
-            if (y <= 0.9)
-                y += 0.01;
-        }
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)    //strelica dole pomera kvadrat
-        {
-            if (y > -0.9)
-                y -= 0.01;
-        }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)   //strelica desno pomera kvadrat
-        {
-            if (x <= 0.9)
-                x += 0.01;
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)    //strelica levo pomera kvadrat
-        {
-            if (x >= -0.9)
-                x -= 0.01;
-        }
-        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)   //R vraca na pocetak
-        {
-            x = 0;
-            y = 0;
-        }
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)   //1 crta tacke
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-        }
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)   //2 crta linije
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)   //3 popunjava
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
-        if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)   //4 ukljuci providnost
-        {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-        if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)   //5 iskljuci providnost
-        {
-            glDisable(GL_BLEND);
-        }
+        glfwPollEvents();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(basicShader);
-        glUniform2f(uPosLoc, 0, 0); //podesava vrednost uniform promenljive
-        glBindVertexArray(VAO[0]);
-        glLineWidth(4.0);
-        glDrawArrays(GL_LINE_LOOP, 0, sizeof(starVertices) / stride);   //crta zvezdu
-        glLineWidth(1.0);
 
+        glUseProgram(basicShader);
+
+        // Telo radija
+        glUniform3f(uColorLoc, 31 / 255.0f, 0 / 255.0f, 75 / 255.0f);
+        glBindVertexArray(VAO[0]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Antena
+        glUniform3f(uColorLoc, 96 / 255.0f, 13 / 255.0f, 181 / 255.0f); 
         glBindVertexArray(VAO[1]);
-        glUniform2f(uPosLoc, x, y);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(rectangleVertices) / stride); //crta kvadrat
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Levi zvučnik (mreža)
+        glUniform3f(uColorLoc, 81 / 255.0f, 204 / 255.0f, 220 / 255.0f);
+        glBindVertexArray(VAO[2]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Desni zvučnik (mreža)
+        glUniform3f(uColorLoc, 81 / 255.0f, 204 / 255.0f, 220 / 255.0f);
+        glBindVertexArray(VAO[3]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Leva membrana
+        glUniform3f(uColorLoc, 236 / 255.0f, 0 / 255.0f, 240 / 255.0f);
+        glBindVertexArray(VAO[4]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
+
+        // Desna membrana
+        glUniform3f(uColorLoc, 236 / 255.0f, 0 / 255.0f, 240 / 255.0f);
+        glBindVertexArray(VAO[5]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
         glBindVertexArray(0);
         glUseProgram(0);
 
         glfwSwapBuffers(window);
-
     }
 
-    glDeleteBuffers(2, VBO);
-    glDeleteVertexArrays(2, VAO);
+    glDeleteBuffers(6, VBO);
+    glDeleteVertexArrays(6, VAO);
     glDeleteProgram(basicShader);
 
     glfwTerminate();
