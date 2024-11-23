@@ -72,10 +72,10 @@ int main(void)
 
     float antennaVertices[] = {
         // X      Y
-        -0.75, 0.2,  // baza antene levo
-        -0.65, 0.2,  // baza antene desno
-        -0.75, 0.8,  // vrh antene levo
-        -0.65, 0.8   // vrh antene desno
+        -0.72, 0.2,  // baza antene levo (manja širina)
+        -0.68, 0.2,  // baza antene desno
+        -0.72, 0.8,  // vrh antene levo
+        -0.68, 0.8   // vrh antene desno
     };
 
     float leftSpeakerVertices[] = {
@@ -174,32 +174,32 @@ int main(void)
         glUseProgram(basicShader);
 
         // Telo radija
-        glUniform3f(uColorLoc, 31 / 255.0f, 0 / 255.0f, 75 / 255.0f);
+        glUniform3f(uColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Antena
-        glUniform3f(uColorLoc, 96 / 255.0f, 13 / 255.0f, 181 / 255.0f); 
+        glUniform3f(uColorLoc, 176 / 255.0f, 176 / 255.0f, 176 / 255.0f); 
         glBindVertexArray(VAO[1]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Levi zvučnik (mreža)
-        glUniform3f(uColorLoc, 81 / 255.0f, 204 / 255.0f, 220 / 255.0f);
+        glUniform3f(uColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f); 
         glBindVertexArray(VAO[2]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Desni zvučnik (mreža)
-        glUniform3f(uColorLoc, 81 / 255.0f, 204 / 255.0f, 220 / 255.0f);
+        glUniform3f(uColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f); 
         glBindVertexArray(VAO[3]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Leva membrana
-        glUniform3f(uColorLoc, 236 / 255.0f, 0 / 255.0f, 240 / 255.0f);
+        glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f);
         glBindVertexArray(VAO[4]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
         // Desna membrana
-        glUniform3f(uColorLoc, 236 / 255.0f, 0 / 255.0f, 240 / 255.0f);
+        glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f);
         glBindVertexArray(VAO[5]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
