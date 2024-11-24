@@ -63,43 +63,41 @@ int main(void)
 
     // Definisanje oblika radija
     float radioBodyVertices[] = {
-        // X      Y
-        -0.8, -0.6,  // donji levi ugao
-         0.8, -0.6,  // donji desni ugao
-        -0.8,  0.2,  // gornji levi ugao
-         0.8,  0.2   // gornji desni ugao
+        -0.9, -0.7,  // Donji levi ugao
+         0.9, -0.7,  // Donji desni ugao
+        -0.9,  0.3,  // Gornji levi ugao
+         0.9,  0.3   // Gornji desni ugao
     };
 
     float antennaVertices[] = {
-        // X      Y
-        -0.72, 0.2,  // baza antene levo (manja širina)
-        -0.68, 0.2,  // baza antene desno
-        -0.72, 0.8,  // vrh antene levo
-        -0.68, 0.8   // vrh antene desno
+        -0.8, 0.3,   // Baza antene levo
+        -0.7, 0.3,   // Baza antene desno
+        -0.8, 0.9,   // Vrh antene levo
+        -0.7, 0.9    // Vrh antene desno
+    };
+
+
+    float rightSpeakerVertices[] = {
+        0.25, -0.65,  // Donji levi ugao
+        0.75, -0.65,  // Donji desni ugao
+        0.25, -0.15,  // Gornji levi ugao
+        0.75, -0.15   // Gornji desni ugao
     };
 
     float leftSpeakerVertices[] = {
-        // X      Y
-        -0.6, -0.5,  // donji levi ugao
-        -0.2, -0.5,  // donji desni ugao
-        -0.6, -0.1,  // gornji levi ugao
-        -0.2, -0.1   // gornji desni ugao
+        -0.75, -0.65,  // Donji levi ugao
+        -0.25, -0.65,  // Donji desni ugao
+        -0.75, -0.15,  // Gornji levi ugao
+        -0.25, -0.15   // Gornji desni ugao
     };
 
-    float rightSpeakerVertices[] = {
-        // X      Y
-        0.2, -0.5,  // donji levi ugao
-        0.6, -0.5,  // donji desni ugao
-        0.2, -0.1,  // gornji levi ugao
-        0.6, -0.1   // gornji desni ugao
-    };
 
     float leftMembraneVertices[(CRES + 2) * 2];
-    generateCircle(leftMembraneVertices, -0.4, -0.3, 0.15f);  // Centar (-0.4, -0.3), poluprečnik 0.15
+    generateCircle(leftMembraneVertices, -0.5, -0.4, 0.25f); // Centar (-0.5, -0.4), poluprečnik 0.25
 
     float rightMembraneVertices[(CRES + 2) * 2];
-    generateCircle(rightMembraneVertices, 0.4, -0.3, 0.15f);  // Centar (0.4, -0.3), poluprečnik 0.15
-    
+    generateCircle(rightMembraneVertices, 0.5, -0.4, 0.25f); // Centar (0.5, -0.4), poluprečnik 0.25
+
 
     //vertex array object cuva konfiguraciju vertiksa
     unsigned VAO[6]; 
