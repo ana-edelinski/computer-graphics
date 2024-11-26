@@ -146,7 +146,15 @@
   <ItemGroup>
     <None Include="basic.frag" />
     <None Include="basic.vert" />
+    <None Include="line.frag" />
+    <None Include="line.vert" />
+    <None Include="membrane.frag" />
+    <None Include="membrane.vert" />
     <None Include="packages.config" />
+    <None Include="radiobody.frag" />
+    <None Include="radiobody.vert" />
+    <None Include="speaker.frag" />
+    <None Include="speaker.vert" />
     <None Include="texture.frag" />
     <None Include="texture.vert" />
   </ItemGroup>

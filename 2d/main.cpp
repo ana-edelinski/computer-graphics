@@ -61,8 +61,16 @@ int main(void)
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
-    unsigned int basicShader = createShader("basic.vert", "basic.frag");    //kreiram sejder tj povezujem sejdere u jedan sejderski program
+    //unsigned int basicShader = createShader("basic.vert", "basic.frag");    //kreiram sejder tj povezujem sejdere u jedan sejderski program
+
+    //dodajem
+    unsigned int radioBodyShader = createShader("radiobody.vert", "radiobody.frag");
+    unsigned int speakerShader = createShader("speaker.vert", "speaker.frag");
+    unsigned int membraneShader = createShader("membrane.vert", "membrane.frag");
+    unsigned int lineShader = createShader("line.vert", "line.frag");
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
+
+
 
     //****
 
@@ -274,7 +282,7 @@ int main(void)
 
     //ovo se odnosi na basic shader za sada...
     //unsigned int uPosLoc = glGetUniformLocation(basicShader, "uPos"); //Mora biti POSLE pravljenja sejdera, inace ta uniforma ne postoji, kao i sejder
-    unsigned int uColorLoc = glGetUniformLocation(basicShader, "color");    //za boje
+   // unsigned int uColorLoc = glGetUniformLocation(basicShader, "color");    //za boje
     glPointSize(4);
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -286,46 +294,60 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-
-        glUseProgram(basicShader);
+        glUseProgram(radioBodyShader);
+        unsigned int uBodyColorLoc = glGetUniformLocation(radioBodyShader, "color");
 
         // Telo radija
-        glUniform3f(uColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
+        glUniform3f(uBodyColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Antena
-        glUniform3f(uColorLoc, 176 / 255.0f, 176 / 255.0f, 176 / 255.0f); 
+        glUniform3f(uBodyColorLoc, 176 / 255.0f, 176 / 255.0f, 176 / 255.0f);
         glBindVertexArray(VAO[1]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // Levi zvučnik (mreža)
-        glUniform3f(uColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f); 
+        glUseProgram(speakerShader);
+        unsigned int uSpeakerColorLoc = glGetUniformLocation(speakerShader, "color");
+
+        // Levi zvučnik
+        glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
         glBindVertexArray(VAO[2]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // Desni zvučnik (mreža)
-        glUniform3f(uColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f); 
+        // Desni zvučnik
+        glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
         glBindVertexArray(VAO[3]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+        glUseProgram(membraneShader);
+        unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color");
         // Leva membrana
-        glUniform3f(uColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f); 
+        glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[4]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
-
         // Desna membrana
-        glUniform3f(uColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
+        glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[5]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
+        glUseProgram(lineShader);
+        unsigned int uLineColorLoc = glGetUniformLocation(lineShader, "color");
+        glUniform3f(uLineColorLoc, 0.0f, 0.0f, 0.0f);
+        glBindVertexArray(lineVAO);
+        glDrawArrays(GL_LINES, 0, 2);
+
+
+
+       // glUseProgram(basicShader);
+
         // Levi manji krug
-        glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
+        //glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
         glBindVertexArray(smallMembraneVAO[0]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
         // Desni manji krug
-        glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
+        //glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
         glBindVertexArray(smallMembraneVAO[1]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
@@ -363,12 +385,7 @@ int main(void)
         glBindVertexArray(0);
         glUseProgram(0);
 
-        // Horizontalna linija iznad zvučnika
-        glUseProgram(basicShader);
-        glUniform3f(uColorLoc, 0.0f, 0.0f, 0.0f);
-        glBindVertexArray(lineVAO);
-        glDrawArrays(GL_LINES, 0, 2);
-        glBindVertexArray(0);
+
 
         glfwSwapBuffers(window);
     }
@@ -378,7 +395,7 @@ int main(void)
     //Brisanje bafera i sejdera
     glDeleteBuffers(6, VBO);
     glDeleteVertexArrays(6, VAO);
-    glDeleteProgram(basicShader);
+    //glDeleteProgram(basicShader);
     //mrezica
     glDeleteBuffers(1, &leftMeshVBO);
     glDeleteVertexArrays(1, &leftMeshVAO);

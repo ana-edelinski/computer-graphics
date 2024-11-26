@@ -36,5 +36,25 @@
     <None Include="texture.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
+    <None Include="radiobody.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="radiobody.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="speaker.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="speaker.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="membrane.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="membrane.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="line.vert" />
+    <None Include="line.frag" />
   </ItemGroup>
 </Project>
