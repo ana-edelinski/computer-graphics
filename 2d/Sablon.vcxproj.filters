@@ -48,7 +48,17 @@
     <None Include="membrane.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="line.vert" />
-    <None Include="line.frag" />
+    <None Include="line.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="line.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="basic.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="basic.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

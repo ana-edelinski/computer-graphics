@@ -12,10 +12,41 @@
 #include <GLFW/glfw3.h> //Olaksava pravljenje i otvaranje prozora (konteksta) sa OpenGL sadrzajem
 #include "stb_image.h"
 
+bool radioOn = false;
+float timeElapsed = 0.0f; // Proteklo vreme za animaciju lampice
+
+
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
 unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
 static unsigned loadImageToTexture(const char* filePath);
 void generateCircle(float* circleVertices, float centerX, float centerY, float radius);
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        // Dobij koordinate kursora
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+
+        // Normalizuj koordinate u opseg [-1, 1]
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        float normX = 2.0f * (xPos / width) - 1.0f;
+        float normY = 1.0f - 2.0f * (yPos / height); // OpenGL koordinate obrću Y osu
+
+        // Proveri da li je klik unutar dugmeta za uključivanje/isključivanje radija
+        float buttonCenterX = 0.8f;
+        float buttonCenterY = 0.125f;
+        float buttonRadius = 0.05f;
+
+        float dx = normX - buttonCenterX;
+        float dy = normY - buttonCenterY;
+
+        if (dx * dx + dy * dy <= buttonRadius * buttonRadius) {
+            // Prekini stanje radija
+            radioOn = !radioOn;
+        }
+    }
+}
 
 
 
@@ -66,12 +97,17 @@ int main(void)
     unsigned int membraneShader = createShader("membrane.vert", "membrane.frag");
     unsigned int lineShader = createShader("line.vert", "line.frag");
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
+    unsigned int radioOnOffButtonShadder = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffButtonIndicatorShadder = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffButtonIndicatorLineShadder = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffLampShadder = createShader("basic.vert", "basic.frag");
 
 
-    unsigned int VAO[11];
-    unsigned int VBO[11];
-    glGenVertexArrays(11, VAO);
-    glGenBuffers(11, VBO);
+    unsigned int VAO[17];
+    unsigned int VBO[17];
+    glGenVertexArrays(17, VAO);
+    glGenBuffers(17, VBO);
+    unsigned int stride;
 
 
     float radioBodyVertices[] = {
@@ -135,6 +171,14 @@ int main(void)
 
     float smallRightMembraneVertices[(CRES + 2) * 2];
     generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.15f);
+
+    // RADIO ON/OFF BUTTON INDICATOR LINE
+    float verticesRadioButtonIndicatorLine[] =
+    {
+        // X      Y
+        0.8, 0.125,
+        0.8, 0.165
+    };
 
     //Povezivanje podataka sa VAO i VBO
 
@@ -239,12 +283,107 @@ int main(void)
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
+    // RADIO ON/OFF BUTTON
+    float radioOnOffButton[CRES * 2 + 4];
+    float r = 0.05;
+    radioOnOffButton[0] = 0.8;
+    radioOnOffButton[1] = 0.125;
+    for (int i = 0; i <= CRES; i++)
+    {
+
+        radioOnOffButton[2 + 2 * i] = radioOnOffButton[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
+        radioOnOffButton[2 + 2 * i + 1] = radioOnOffButton[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
+    }
+    glBindVertexArray(VAO[11]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[11]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButton), radioOnOffButton, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // RADIO ON/OFF BUTTON INDICATOR
+    float radioOnOffButtonIndicator[CRES * 2 + 4];
+    r = 0.04;
+    radioOnOffButtonIndicator[0] = 0.8;
+    radioOnOffButtonIndicator[1] = 0.125;
+    for (int i = 0; i <= CRES; i++)
+    {
+        radioOnOffButtonIndicator[2 + 2 * i] = radioOnOffButtonIndicator[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
+        radioOnOffButtonIndicator[2 + 2 * i + 1] = radioOnOffButtonIndicator[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
+    }
+    glBindVertexArray(VAO[12]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[12]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButtonIndicator), radioOnOffButtonIndicator, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // RADIO ON/OFF BUTTON CONTENT INDICATOR INNER
+    float radioOnOffButtonIndicatorInner[CRES * 2 + 4];
+    r = 0.035;
+    radioOnOffButtonIndicatorInner[0] = 0.8;
+    radioOnOffButtonIndicatorInner[1] = 0.125;
+    for (int i = 0; i <= CRES; i++)
+    {
+        radioOnOffButtonIndicatorInner[2 + 2 * i] = radioOnOffButtonIndicatorInner[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
+        radioOnOffButtonIndicatorInner[2 + 2 * i + 1] = radioOnOffButtonIndicatorInner[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
+    }
+    glBindVertexArray(VAO[13]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[13]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButtonIndicatorInner), radioOnOffButtonIndicatorInner, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // RADIO ON/OFF BUTTON INDICATOR LINE
+    stride = 2 * sizeof(float);
+    glBindVertexArray(VAO[14]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[14]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesRadioButtonIndicatorLine), verticesRadioButtonIndicatorLine, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // RADIO ON/OFF LAMP
+    float radioOnOffLamp[CRES * 2 + 4];
+    r = 0.02;
+    radioOnOffLamp[0] = 0.725;
+    radioOnOffLamp[1] = 0.125;
+    for (int i = 0; i <= CRES; i++)
+    {
+        radioOnOffLamp[2 + 2 * i] = radioOnOffLamp[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
+        radioOnOffLamp[2 + 2 * i + 1] = radioOnOffLamp[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
+    }
+    glBindVertexArray(VAO[15]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[15]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffLamp), radioOnOffLamp, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // RADIO ON/OFF LAMP LIGHT
+    float radioOnOffLampLight[CRES * 2 + 4];
+    r = 0.01;
+    radioOnOffLampLight[0] = 0.725;
+    radioOnOffLampLight[1] = 0.125;
+    for (int i = 0; i <= CRES; i++)
+    {
+        radioOnOffLampLight[2 + 2 * i] = radioOnOffLampLight[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
+        radioOnOffLampLight[2 + 2 * i + 1] = radioOnOffLampLight[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
+    }
+    glBindVertexArray(VAO[16]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[16]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffLampLight), radioOnOffLampLight, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    double previousTime = glfwGetTime();
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
     // Glavna petlja
     while (!glfwWindowShouldClose(window))  //Beskonacna petlja iz koje izlazimo tek kada prozor treba da se zatvori
     {
+        glLineWidth(1.0f);
+
         glfwPollEvents();
 
         // Brisanje ekrana
@@ -255,6 +394,16 @@ int main(void)
 
         glUseProgram(radioBodyShader);
         unsigned int uBodyColorLoc = glGetUniformLocation(radioBodyShader, "color");
+
+        int indexRGB = 0;
+        if (radioOn) {
+            indexRGB = 1;
+        }
+
+        float onOffRGB[3] = { 0.0f, 0.0f, 0.0f };
+        float lampRGB[3] = { 0.0f, 0.0f, 0.0f };
+        onOffRGB[indexRGB] = 0.4f;
+        lampRGB[indexRGB] = 1.0f;
 
         // Telo radija
         glUniform3f(uBodyColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
@@ -312,27 +461,109 @@ int main(void)
         glDrawArrays(GL_LINES, 0, 2);
 
 
-        // Renderovanje mrežice levog zvučnika
+        // Renderovanje mrežice zvučnika
         glUseProgram(textureShader);
 
         // Setuj uniform za teksturu
         unsigned int textureUniform = glGetUniformLocation(textureShader, "uTex");
         glUniform1i(textureUniform, 0);  // Teksturna jedinica 0
 
-        //mrezica levog zvucnika
+        // Mrezica levog zvucnika
         glBindVertexArray(VAO[8]);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, meshTexture);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
 
-        //mrezica desnog zvucnika
+        // Mrezica desnog zvucnika
         glBindVertexArray(VAO[9]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
         glUseProgram(0);
 
+
+        // Izračunavanje proteklog vremena za animaciju
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - previousTime;
+        previousTime = currentTime;
+
+        // Resetovanje vremena ako je radio isključen
+        if (!radioOn) {
+            timeElapsed = 0.0f; // Resetuje animaciju ako je radio isključen
+        }
+
+        // Izračunavanje interpolirane boje za lampicu kada je radio uključen
+        float lampRed = 0.0f, lampGreen = 0.0f, lampBlue = 0.0f; // Neutralna boja kada je radio isključen
+        if (radioOn) {
+            timeElapsed += deltaTime; // Ažuriranje vremena za animaciju
+            float intensity = (sin(timeElapsed * 2.0f) + 1.0f) / 2.0f; // Intenzitet varira od 0 do 1
+            lampRed = 1.0f; 
+            lampGreen = 1.0f - 0.5f * intensity; 
+            lampBlue = 1.0f - intensity; 
+        }
+
+        // Renderovanje ON/OFF buttona
+        glUseProgram(radioOnOffButtonShadder);
+
+        // ON/OFF Button
+        glUniform3f(glGetUniformLocation(radioOnOffButtonShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glBindVertexArray(VAO[11]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButton) / (2 * sizeof(float)));
+
+        // Renderovanje ON/OFF button indikatora
+        glUseProgram(radioOnOffButtonIndicatorShadder);
+
+        // Postavljanje boje kruga: crno kada je isključen, belo kada je uključen
+        float indicatorR = radioOn ? 1.0f : 0.0f; // Crvena komponenta
+        float indicatorG = radioOn ? 1.0f : 0.0f; // Zelena komponenta
+        float indicatorB = radioOn ? 1.0f : 0.0f; // Plava komponenta
+
+        // Postavljanje uniforma za boju indikatora
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShadder, "color"), indicatorR, indicatorG, indicatorB);
+
+        // Krug ON/OFF button indikatora
+        glBindVertexArray(VAO[12]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicator) / (2 * sizeof(float)));
+
+
+        // Unutrasnji deo ON/OFF button indikatora
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glBindVertexArray(VAO[13]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicatorInner) / (2 * sizeof(float)));
+
+
+
+        // Renderovanje sredisnje linije na ON/OFF button indikatoru
+        glUseProgram(radioOnOffButtonIndicatorLineShadder);
+
+
+        // Postavljanje boje linije: crna kada je radio isključen, bela kada je uključen
+        float lineR = radioOn ? 1.0f : 0.0f; 
+        float lineG = radioOn ? 1.0f : 0.0f; 
+        float lineB = radioOn ? 1.0f : 0.0f; 
+
+        // Postavljanje uniform boje linije
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorLineShadder, "color"), lineR, lineG, lineB);
+
+        // Srednja linija na ON/OFF button indikatoru
+        glBindVertexArray(VAO[14]);
+        glLineWidth(2.0f);
+        glDrawArrays(GL_LINES, 0, 2);
+
+
+        // Renderovanje lampice
+        glUseProgram(radioOnOffLampShadder);
+
+        // Lampica osnovna
+        glUniform3f(glGetUniformLocation(radioOnOffLampShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glBindVertexArray(VAO[15]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
+
+        // Boja lampice
+        glUniform3f(glGetUniformLocation(radioOnOffLampShadder, "color"), lampRed, lampGreen, lampBlue);
+        glBindVertexArray(VAO[16]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
 
         glfwSwapBuffers(window);
@@ -342,8 +573,8 @@ int main(void)
 
     // Brisanje resursa
     glDeleteTextures(1, &meshTexture);
-    glDeleteBuffers(11, VBO);
-    glDeleteVertexArrays(11, VAO);
+    glDeleteBuffers(17, VBO);
+    glDeleteVertexArrays(17, VAO);
 
     // Brisanje shader programa
     glDeleteProgram(radioBodyShader);
@@ -351,6 +582,10 @@ int main(void)
     glDeleteProgram(membraneShader);
     glDeleteProgram(lineShader);
     glDeleteProgram(textureShader);
+    glDeleteProgram(radioOnOffButtonShadder);
+    glDeleteProgram(radioOnOffButtonIndicatorShadder);
+    glDeleteProgram(radioOnOffButtonIndicatorLineShadder);
+    glDeleteProgram(radioOnOffLampShadder);
 
     // Terminate GLFW (Sve OK - batali program)
     glfwTerminate();
