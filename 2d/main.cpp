@@ -3,14 +3,13 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #define CRES 100 // Circle Resolution = Rezolucija kruga
+#define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <GL/glew.h>   //Omogucava upotrebu OpenGL naredbi
 #include <GLFW/glfw3.h> //Olaksava pravljenje i otvaranje prozora (konteksta) sa OpenGL sadrzajem
-
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
@@ -61,9 +60,7 @@ int main(void)
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
-    //unsigned int basicShader = createShader("basic.vert", "basic.frag");    //kreiram sejder tj povezujem sejdere u jedan sejderski program
 
-    //dodajem
     unsigned int radioBodyShader = createShader("radiobody.vert", "radiobody.frag");
     unsigned int speakerShader = createShader("speaker.vert", "speaker.frag");
     unsigned int membraneShader = createShader("membrane.vert", "membrane.frag");
@@ -71,66 +68,39 @@ int main(void)
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
 
 
+    unsigned int VAO[11];
+    unsigned int VBO[11];
+    glGenVertexArrays(11, VAO);
+    glGenBuffers(11, VBO);
 
-    //****
 
-    unsigned VAO[6];    //vertex array object cuva konfiguraciju vertiksa
-    glGenVertexArrays(6, VAO);
-    unsigned VBO[6];    //vertex buffer object je memorija u kojoj se vertiksi cuvaju na grafickoj kartici
-    glGenBuffers(6, VBO);
-
-    
-
-    //mali crni krug u zvucniku
-    unsigned int smallMembraneVAO[2], smallMembraneVBO[2];
-    glGenVertexArrays(2, smallMembraneVAO);
-    glGenBuffers(2, smallMembraneVBO);
-
-    //za levu mrezicu
-    unsigned int leftMeshVAO, leftMeshVBO;
-    glGenVertexArrays(1, &leftMeshVAO);
-    glGenBuffers(1, &leftMeshVBO);
-
-    // za desnu mrežicu
-    unsigned int rightMeshVAO, rightMeshVBO;
-    glGenVertexArrays(1, &rightMeshVAO);
-    glGenBuffers(1, &rightMeshVBO);
-
-    //za liniju
-    unsigned int lineVAO, lineVBO;
-    glGenVertexArrays(1, &lineVAO);
-    glGenBuffers(1, &lineVBO);
-
-    //*****
-
-    // Definisanje oblika radija
     float radioBodyVertices[] = {
-        -0.9, -0.7,  // Donji levi ugao
-         0.9, -0.7,  // Donji desni ugao
-        -0.9,  0.3,  // Gornji levi ugao
-         0.9,  0.3   // Gornji desni ugao
+        -0.9, -0.7,  
+         0.9, -0.7,  
+        -0.9,  0.3,  
+         0.9,  0.3  
     };
 
     float antennaVertices[] = {
-        -0.8, 0.3,   // Baza antene levo
-        -0.7, 0.3,   // Baza antene desno
-        -0.8, 0.9,   // Vrh antene levo
-        -0.7, 0.9    // Vrh antene desno
+        -0.8, 0.3,   
+        -0.7, 0.3,   
+        -0.8, 0.9,   
+        -0.7, 0.9    
     };
 
 
     float rightSpeakerVertices[] = {
-        0.25, -0.65,  // Donji levi ugao
-        0.75, -0.65,  // Donji desni ugao
-        0.25, -0.15,  // Gornji levi ugao
-        0.75, -0.15   // Gornji desni ugao
+        0.25, -0.65,  
+        0.75, -0.65,  
+        0.25, -0.15,  
+        0.75, -0.15   
     };
 
     float leftSpeakerVertices[] = {
-        -0.75, -0.65,  // Donji levi ugao
-        -0.25, -0.65,  // Donji desni ugao
-        -0.75, -0.15,  // Gornji levi ugao
-        -0.25, -0.15   // Gornji desni ugao
+        -0.75, -0.65,  
+        -0.25, -0.65,  
+        -0.75, -0.15,  
+        -0.25, -0.15   
     };
 
     float rightSpeakerMeshVertices[] = {
@@ -149,25 +119,24 @@ int main(void)
         -0.25, -0.15,  1.0, 1.0F
     };
 
-    // Horizontalna linija iznad zvučnika
     float separatorLineVertices[] = {
-        -0.9f, -0.1f, // Leva tačka
-         0.9f, -0.1f  // Desna tačka
+        -0.9f, -0.1f, 
+         0.9f, -0.1f  
     };
 
     float leftMembraneVertices[(CRES + 2) * 2];
-    generateCircle(leftMembraneVertices, -0.5, -0.4, 0.25f); // Centar (-0.5, -0.4), poluprečnik 0.25
+    generateCircle(leftMembraneVertices, -0.5, -0.4, 0.25f); 
 
     float rightMembraneVertices[(CRES + 2) * 2];
-    generateCircle(rightMembraneVertices, 0.5, -0.4, 0.25f); // Centar (0.5, -0.4), poluprečnik 0.25
+    generateCircle(rightMembraneVertices, 0.5, -0.4, 0.25f); 
 
     float smallLeftMembraneVertices[(CRES + 2) * 2];
-    generateCircle(smallLeftMembraneVertices, -0.5, -0.4, 0.15f); // Centar (-0.5, -0.4), poluprečnik 0.15
+    generateCircle(smallLeftMembraneVertices, -0.5, -0.4, 0.15f); 
 
     float smallRightMembraneVertices[(CRES + 2) * 2];
-    generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.15f); // Centar (0.5, -0.4), poluprečnik 0.15
+    generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.15f);
 
-    //povezujem podatke sa vao i vbo**********************
+    //Povezivanje podataka sa VAO i VBO
 
     // Telo radija
     glBindVertexArray(VAO[0]);
@@ -175,6 +144,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(radioBodyVertices), radioBodyVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     // Antena
     glBindVertexArray(VAO[1]);
@@ -182,6 +152,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(antennaVertices), antennaVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     // Levi zvučnik
     glBindVertexArray(VAO[2]);
@@ -189,6 +160,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerVertices), leftSpeakerVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     // Desni zvučnik
     glBindVertexArray(VAO[3]);
@@ -196,6 +168,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerVertices), rightSpeakerVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     // *** Učitavanje teksture ***
     unsigned int meshTexture = loadImageToTexture("resources/mesh.png");
@@ -210,6 +183,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(leftMembraneVertices), leftMembraneVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);   //deaktivira VAO
 
     // Desna membrana
     glBindVertexArray(VAO[5]);
@@ -217,73 +191,54 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(rightMembraneVertices), rightMembraneVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-
-
-    // Levi manji krug
-    glBindVertexArray(smallMembraneVAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, smallMembraneVBO[0]);
+    // Leva membrana mala
+    glBindVertexArray(VAO[6]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(smallLeftMembraneVertices), smallLeftMembraneVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
-    // Desni manji krug
-    glBindVertexArray(smallMembraneVAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, smallMembraneVBO[1]);
+    // Desna membrana mala
+    glBindVertexArray(VAO[7]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(smallRightMembraneVertices), smallRightMembraneVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    //propusteno - leva mrezica
-    glBindVertexArray(leftMeshVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, leftMeshVBO);
+    // Leva mrezica
+    glBindVertexArray(VAO[8]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerMeshVertices), leftSpeakerMeshVertices, GL_STATIC_DRAW);
-    // Pozicija (X, Y)
+    // Pozicija (layout(location = 0))
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // Teksturne koordinate (S, T)
+    glEnableVertexAttribArray(0);   //omoguci atribut na lokaciji 0
+    // Tekstura (layout(location = 1))
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    //???
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glEnableVertexAttribArray(1);   // Omogući atribut na lokaciji 1
+    glBindVertexArray(0);   //deaktivira vao
 
-
-    //desna mrezica
-    glBindVertexArray(rightMeshVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, rightMeshVBO);
+    // Desna mrezica
+    glBindVertexArray(VAO[9]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[9]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerMeshVertices), rightSpeakerMeshVertices, GL_STATIC_DRAW);    
-    // Pozicija (X, Y)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // Teksturne koordinate (S, T)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    //??
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    //linija horizontalna
-    glBindVertexArray(lineVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+    // Horizontalna linija
+    glBindVertexArray(VAO[10]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[10]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(separatorLineVertices), separatorLineVertices, GL_STATIC_DRAW);
-    // Povezivanje atributa za liniju
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    //??
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    //ovo se odnosi na basic shader za sada...
-    //unsigned int uPosLoc = glGetUniformLocation(basicShader, "uPos"); //Mora biti POSLE pravljenja sejdera, inace ta uniforma ne postoji, kao i sejder
-   // unsigned int uColorLoc = glGetUniformLocation(basicShader, "color");    //za boje
-    glPointSize(4);
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -292,7 +247,11 @@ int main(void)
     {
         glfwPollEvents();
 
+        // Brisanje ekrana
+        glClearColor(1.0, 1.0, 1.0, 1.0);   //bela pozadina
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // [KOD ZA CRTANJE]
 
         glUseProgram(radioBodyShader);
         unsigned int uBodyColorLoc = glGetUniformLocation(radioBodyShader, "color");
@@ -320,39 +279,38 @@ int main(void)
         glBindVertexArray(VAO[3]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+
         glUseProgram(membraneShader);
+
         unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color");
+
         // Leva membrana
         glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[4]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
+
         // Desna membrana
         glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
         glBindVertexArray(VAO[5]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
+        // Leva membrana mala
+        glBindVertexArray(VAO[6]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
+
+        // Desna membrana mala
+        glBindVertexArray(VAO[7]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
+
+
         glUseProgram(lineShader);
+
+        // Horizontalna linija
         unsigned int uLineColorLoc = glGetUniformLocation(lineShader, "color");
         glUniform3f(uLineColorLoc, 0.0f, 0.0f, 0.0f);
-        glBindVertexArray(lineVAO);
+        glBindVertexArray(VAO[10]);
         glDrawArrays(GL_LINES, 0, 2);
 
-
-
-       // glUseProgram(basicShader);
-
-        // Levi manji krug
-        //glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
-        glBindVertexArray(smallMembraneVAO[0]);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
-
-        // Desni manji krug
-        //glUniform3f(uColorLoc, 30 / 255.0f, 30 / 255.0f, 30 / 255.0f); 
-        glBindVertexArray(smallMembraneVAO[1]);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
-
-        glBindVertexArray(0);
-        glUseProgram(0);
 
         // Renderovanje mrežice levog zvučnika
         glUseProgram(textureShader);
@@ -361,26 +319,16 @@ int main(void)
         unsigned int textureUniform = glGetUniformLocation(textureShader, "uTex");
         glUniform1i(textureUniform, 0);  // Teksturna jedinica 0
 
-        // Aktiviraj VAO za mrežicu levog zvučnika
-        glBindVertexArray(leftMeshVAO);
-
-        // Aktiviraj teksturu
+        //mrezica levog zvucnika
+        glBindVertexArray(VAO[8]);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, meshTexture);
-
-        // Crtanje mrežice kao pravougaonika za levi zvučnik
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-        // Resetuj stanje za levi zvučnik
         glBindVertexArray(0);
 
-        // Renderovanje mrežice desnog zvučnika
-        glBindVertexArray(rightMeshVAO);
-
-        // Crtanje mrežice kao pravougaonika za desni zvučnik
+        //mrezica desnog zvucnika
+        glBindVertexArray(VAO[9]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-        // Resetuj stanje za desni zvučnik
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
         glUseProgram(0);
@@ -392,24 +340,22 @@ int main(void)
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
-    //Brisanje bafera i sejdera
-    glDeleteBuffers(6, VBO);
-    glDeleteVertexArrays(6, VAO);
-    //glDeleteProgram(basicShader);
-    //mrezica
-    glDeleteBuffers(1, &leftMeshVBO);
-    glDeleteVertexArrays(1, &leftMeshVAO);
-    glDeleteBuffers(1, &rightMeshVBO);
-    glDeleteVertexArrays(1, &rightMeshVAO);
-    //mali krugovi u okviru zvucnika
-    glDeleteBuffers(2, smallMembraneVBO);
-    glDeleteVertexArrays(2, smallMembraneVAO);
-    //linija horizontalna
-    glDeleteBuffers(1, &lineVBO);
-    glDeleteVertexArrays(1, &lineVAO);
+    // Brisanje resursa
+    glDeleteTextures(1, &meshTexture);
+    glDeleteBuffers(11, VBO);
+    glDeleteVertexArrays(11, VAO);
 
+    // Brisanje shader programa
+    glDeleteProgram(radioBodyShader);
+    glDeleteProgram(speakerShader);
+    glDeleteProgram(membraneShader);
+    glDeleteProgram(lineShader);
+    glDeleteProgram(textureShader);
+
+    // Terminate GLFW (Sve OK - batali program)
     glfwTerminate();
     return 0;
+
 }
 
 unsigned int compileShader(GLenum type, const char* source)

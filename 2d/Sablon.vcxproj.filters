@@ -24,12 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="basic.frag">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="basic.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
     <None Include="texture.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
