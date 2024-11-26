@@ -154,7 +154,13 @@ int main(void)
         -0.75, -0.65,  0.0, 0.0,
         -0.25, -0.65,  1.0, 0.0,
         -0.75, -0.15,  0.0, 1.0,
-        -0.25, -0.15,  1.0, 1.0
+        -0.25, -0.15,  1.0, 1.0F
+    };
+
+    // Horizontalna linija iznad zvučnika
+    float separatorLineVertices[] = {
+        -0.9f, -0.1f, // Leva tačka
+         0.9f, -0.1f  // Desna tačka
     };
 
 
@@ -278,6 +284,23 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    // VAO i VBO za liniju
+    unsigned int lineVAO, lineVBO;
+    glGenVertexArrays(1, &lineVAO);
+    glGenBuffers(1, &lineVBO);
+
+    glBindVertexArray(lineVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(separatorLineVertices), separatorLineVertices, GL_STATIC_DRAW);
+
+    // Povezivanje atributa za liniju
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+
 
     //kreiranje shadera
     //float x = 0;
@@ -376,6 +399,12 @@ int main(void)
         glBindVertexArray(0);
         glUseProgram(0);
 
+        // Horizontalna linija iznad zvučnika
+        glUseProgram(basicShader);
+        glUniform3f(uColorLoc, 0.0f, 0.0f, 0.0f);
+        glBindVertexArray(lineVAO);
+        glDrawArrays(GL_LINES, 0, 2);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
     }
@@ -391,6 +420,9 @@ int main(void)
     //mali krugovi u okviru zvucnika
     glDeleteBuffers(2, smallMembraneVBO);
     glDeleteVertexArrays(2, smallMembraneVAO);
+    //linija horizontalna
+    glDeleteBuffers(1, &lineVBO);
+    glDeleteVertexArrays(1, &lineVAO);
 
 
     glfwTerminate();
