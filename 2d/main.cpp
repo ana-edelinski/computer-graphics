@@ -23,30 +23,38 @@ void generateCircle(float* circleVertices, float centerX, float centerY, float r
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        // Dobij koordinate kursora
+        // Dobijanje pozicije kursora u pikselima
         double xPos, yPos;
         glfwGetCursorPos(window, &xPos, &yPos);
 
-        // Normalizuj koordinate u opseg [-1, 1]
+        // Dobijanje dimenzija prozora
         int width, height;
         glfwGetWindowSize(window, &width, &height);
+
+        // Konverzija koordinata u OpenGL normalizovani prostor [-1, 1]
         float normX = 2.0f * (xPos / width) - 1.0f;
-        float normY = 1.0f - 2.0f * (yPos / height); // OpenGL koordinate obrću Y osu
+        float normY = 1.0f - 2.0f * (yPos / height); // OpenGL ima obrnutu osu Y
 
-        // Proveri da li je klik unutar dugmeta za uključivanje/isključivanje radija
-        float buttonCenterX = 0.8f;
-        float buttonCenterY = 0.125f;
-        float buttonRadius = 0.05f;
+        // Definišemo centar i radijus dugmeta u normalizovanim koordinatama
+        const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
+        const float buttonCenterY = 0.125f; // Y koordinata centra dugmeta
+        const float buttonRadius = 0.05f; // Poluprečnik dugmeta
 
+        // Proveravamo da li je klik unutar radijusa dugmeta
         float dx = normX - buttonCenterX;
         float dy = normY - buttonCenterY;
 
-        if (dx * dx + dy * dy <= buttonRadius * buttonRadius) {
-            // Prekini stanje radija
+        if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
+            // Menjamo stanje radioOn (uključen/isključen)
             radioOn = !radioOn;
+            std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Uključeno" : "Isključeno") << std::endl;
+        }
+        else {
+            std::cout << "Klik izvan dugmeta!" << std::endl;
         }
     }
 }
+
 
 
 
