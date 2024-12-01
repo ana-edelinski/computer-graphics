@@ -14,6 +14,11 @@
 
 bool radioOn = false;
 float timeElapsed = 0.0f; // Proteklo vreme za animaciju lampice
+float volumeBarIndicatorOffset = 0.0f;
+float sliderPosition = 0.0f; // Pozicija klizača u opsegu [-0.5, 0.5]
+bool sliderDragging = false;    // Da li korisnik trenutno prevlači klizač
+float speakerMembraneScaleLeft = 1.0f;
+float speakerMembraneScaleRight = 1.0f;
 
 
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
@@ -22,40 +27,64 @@ static unsigned loadImageToTexture(const char* filePath);
 void generateCircle(float* circleVertices, float centerX, float centerY, float radius);
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        // Dobijanje pozicije kursora u pikselima
-        double xPos, yPos;
-        glfwGetCursorPos(window, &xPos, &yPos);
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            // Dobijanje pozicije kursora u pikselima
+            double xPos, yPos;
+            glfwGetCursorPos(window, &xPos, &yPos);
 
-        // Dobijanje dimenzija prozora
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
+            // Dobijanje dimenzija prozora
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
 
-        // Konverzija koordinata u OpenGL normalizovani prostor [-1, 1]
-        float normX = 2.0f * (xPos / width) - 1.0f;
-        float normY = 1.0f - 2.0f * (yPos / height); // OpenGL ima obrnutu osu Y
+            // Konverzija koordinata u OpenGL normalizovani prostor [-1, 1]
+            float normX = 2.0f * (xPos / width) - 1.0f;
+            float normY = 1.0f - 2.0f * (yPos / height); // OpenGL ima obrnutu osu Y
 
-        // Definišemo centar i radijus dugmeta u normalizovanim koordinatama
-        const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
-        const float buttonCenterY = 0.125f; // Y koordinata centra dugmeta
-        const float buttonRadius = 0.05f; // Poluprečnik dugmeta
+            // Definišemo centar i radijus dugmeta u normalizovanim koordinatama - provera za ON/OFF button
+            const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
+            const float buttonCenterY = 0.125f; // Y koordinata centra dugmeta
+            const float buttonRadius = 0.05f; // Poluprečnik dugmeta
 
-        // Proveravamo da li je klik unutar radijusa dugmeta
-        float dx = normX - buttonCenterX;
-        float dy = normY - buttonCenterY;
+            // Proveravamo da li je klik unutar radijusa dugmeta
+            float dx = normX - buttonCenterX;
+            float dy = normY - buttonCenterY;
 
-        if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
-            // Menjamo stanje radioOn (uključen/isključen)
-            radioOn = !radioOn;
-            std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Uključeno" : "Isključeno") << std::endl;
+            if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
+                // Menjamo stanje radioOn (uključen/isključen)
+                radioOn = !radioOn;
+                std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Uključeno" : "Isključeno") << std::endl;
+                return;
+            }
+            // Provera za klizač
+            if (normY > -0.23f && normY < -0.17f &&
+                normX >= sliderPosition - 0.05f && normX <= sliderPosition + 0.05f) {
+                sliderDragging = true;  // Aktivira prevlačenje klizača
+                return;
+            }
         }
-        else {
-            std::cout << "Klik izvan dugmeta!" << std::endl;
+        else if (action == GLFW_RELEASE) {
+            if (sliderDragging) {
+                // Prestanak prevlačenja klizača
+                sliderDragging = false;
+                std::cout << "Slider released at position: " << sliderPosition << std::endl;
+            }
         }
     }
 }
 
 
+void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
+    if (sliderDragging) {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        float normX = 2.0f * (xPos / width) - 1.0f;
+
+        // Ograniči poziciju klizača
+        sliderPosition = fmaxf(-0.2f, fminf(0.2f, normX));
+    }
+}
 
 
 int main(void)
@@ -105,16 +134,16 @@ int main(void)
     unsigned int membraneShader = createShader("membrane.vert", "membrane.frag");
     unsigned int lineShader = createShader("line.vert", "line.frag");
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
-    unsigned int radioOnOffButtonShadder = createShader("basic.vert", "basic.frag");
-    unsigned int radioOnOffButtonIndicatorShadder = createShader("basic.vert", "basic.frag");
-    unsigned int radioOnOffButtonIndicatorLineShadder = createShader("basic.vert", "basic.frag");
-    unsigned int radioOnOffLampShadder = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffButtonShader = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffButtonIndicatorShader = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffButtonIndicatorLineShader = createShader("basic.vert", "basic.frag");
+    unsigned int radioOnOffLampShader = createShader("basic.vert", "basic.frag");
 
 
-    unsigned int VAO[17];
-    unsigned int VBO[17];
-    glGenVertexArrays(17, VAO);
-    glGenBuffers(17, VBO);
+    unsigned int VAO[20];
+    unsigned int VBO[20];
+    glGenVertexArrays(20, VAO);
+    glGenBuffers(20, VBO);
     unsigned int stride;
 
 
@@ -175,10 +204,10 @@ int main(void)
     generateCircle(rightMembraneVertices, 0.5, -0.4, 0.25f); 
 
     float smallLeftMembraneVertices[(CRES + 2) * 2];
-    generateCircle(smallLeftMembraneVertices, -0.5, -0.4, 0.15f); 
+    generateCircle(smallLeftMembraneVertices, -0.5, -0.4, 0.10f); 
 
     float smallRightMembraneVertices[(CRES + 2) * 2];
-    generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.15f);
+    generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.10f);
 
     // RADIO ON/OFF BUTTON INDICATOR LINE
     float verticesRadioButtonIndicatorLine[] =
@@ -186,6 +215,12 @@ int main(void)
         // X      Y
         0.8, 0.125,
         0.8, 0.165
+    };
+
+    // Horizontalna traka za klizač
+    float sliderBarVertices[] = {
+        -0.2f, -0.2f,
+         0.2f, -0.2f
     };
 
     //Povezivanje podataka sa VAO i VBO
@@ -380,9 +415,25 @@ int main(void)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // Horizontalna traka za klizač
+    glBindVertexArray(VAO[17]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sliderBarVertices), sliderBarVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
 
+    // Krug klizača
+    float sliderVertices[(CRES + 2) * 2];
+    generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
+
+    glBindVertexArray(VAO[18]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[18]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
 
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetCursorPosCallback(window, cursorPositionCallback);
     double previousTime = glfwGetTime();
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -392,7 +443,32 @@ int main(void)
     {
         glLineWidth(1.0f);
 
-        glfwPollEvents();
+        glfwPollEvents();  
+
+        // Animacija vibracija membrane (sinusoidni pokret) - samo ako je radio uključen i slider nije skroz levo
+        float membraneAmplitude = 0.0f; // Podrazumevano nema vibracija
+
+        if (radioOn && sliderPosition > -0.2f) { // Provera da slider nije skroz levo (-0.2f je minimalna vrednost slider-a)
+            volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
+            membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
+            double time = glfwGetTime();
+            speakerMembraneScaleLeft = 1.0f + membraneAmplitude * sin(time * 20.0f);
+            speakerMembraneScaleRight = 1.0f + membraneAmplitude * cos(time * 20.0f);
+        }
+        else {
+            // Resetovanje skale kada je radio isključen ili slider skroz levo
+            speakerMembraneScaleLeft = 1.0f;
+            speakerMembraneScaleRight = 1.0f;
+        }
+
+
+
+
+        // Animacija vibracija membrane (sinusoidni pokret)
+        double time = glfwGetTime();
+        speakerMembraneScaleLeft = 1.0f + membraneAmplitude * sin(time * 20.0f);
+        speakerMembraneScaleRight = 1.0f + membraneAmplitude * cos(time * 20.0f);
+
 
         // Brisanje ekrana
         glClearColor(1.0, 1.0, 1.0, 1.0);   //bela pozadina
@@ -439,26 +515,34 @@ int main(void)
 
         glUseProgram(membraneShader);
 
-        unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color");
+        unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color"); //
 
-        // Leva membrana
-        glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
+        // Leva membrana - velika
+        glUseProgram(membraneShader);
+        glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
+        glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
+        glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.3f, 0.3f, 0.3f); // Svetlija boja za velike membrane
         glBindVertexArray(VAO[4]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
-        // Desna membrana
-        glUniform3f(uMembraneColorLoc, 70 / 255.0f, 70 / 255.0f, 70 / 255.0f);
+        // Desna membrana - velika
+        glUniform2f(glGetUniformLocation(membraneShader, "center"), 0.5, -0.4);
+        glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleRight);
         glBindVertexArray(VAO[5]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
-        // Leva membrana mala
+        // Leva membrana - mala
+        glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
+        glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
+        glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.2f, 0.2f, 0.2f); // Tamnija boja za male membrane
         glBindVertexArray(VAO[6]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
-        // Desna membrana mala
+        // Desna membrana - mala
+        glUniform2f(glGetUniformLocation(membraneShader, "center"), 0.5, -0.4);
+        glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleRight);
         glBindVertexArray(VAO[7]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
-
 
         glUseProgram(lineShader);
 
@@ -512,15 +596,15 @@ int main(void)
         }
 
         // Renderovanje ON/OFF buttona
-        glUseProgram(radioOnOffButtonShadder);
+        glUseProgram(radioOnOffButtonShader);
 
         // ON/OFF Button
-        glUniform3f(glGetUniformLocation(radioOnOffButtonShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.2f, 0.2f, 0.2f);
         glBindVertexArray(VAO[11]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButton) / (2 * sizeof(float)));
 
         // Renderovanje ON/OFF button indikatora
-        glUseProgram(radioOnOffButtonIndicatorShadder);
+        glUseProgram(radioOnOffButtonIndicatorShader);
 
         // Postavljanje boje kruga: crno kada je isključen, belo kada je uključen
         float indicatorR = radioOn ? 1.0f : 0.0f; // Crvena komponenta
@@ -528,7 +612,7 @@ int main(void)
         float indicatorB = radioOn ? 1.0f : 0.0f; // Plava komponenta
 
         // Postavljanje uniforma za boju indikatora
-        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShadder, "color"), indicatorR, indicatorG, indicatorB);
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), indicatorR, indicatorG, indicatorB);
 
         // Krug ON/OFF button indikatora
         glBindVertexArray(VAO[12]);
@@ -536,14 +620,14 @@ int main(void)
 
 
         // Unutrasnji deo ON/OFF button indikatora
-        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), 0.2f, 0.2f, 0.2f);
         glBindVertexArray(VAO[13]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicatorInner) / (2 * sizeof(float)));
 
 
 
         // Renderovanje sredisnje linije na ON/OFF button indikatoru
-        glUseProgram(radioOnOffButtonIndicatorLineShadder);
+        glUseProgram(radioOnOffButtonIndicatorLineShader);
 
 
         // Postavljanje boje linije: crna kada je radio isključen, bela kada je uključen
@@ -552,7 +636,7 @@ int main(void)
         float lineB = radioOn ? 1.0f : 0.0f; 
 
         // Postavljanje uniform boje linije
-        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorLineShadder, "color"), lineR, lineG, lineB);
+        glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorLineShader, "color"), lineR, lineG, lineB);
 
         // Srednja linija na ON/OFF button indikatoru
         glBindVertexArray(VAO[14]);
@@ -561,18 +645,34 @@ int main(void)
 
 
         // Renderovanje lampice
-        glUseProgram(radioOnOffLampShadder);
+        glUseProgram(radioOnOffLampShader);
 
         // Lampica osnovna
-        glUniform3f(glGetUniformLocation(radioOnOffLampShadder, "color"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), 0.2f, 0.2f, 0.2f);
         glBindVertexArray(VAO[15]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
         // Boja lampice
-        glUniform3f(glGetUniformLocation(radioOnOffLampShadder, "color"), lampRed, lampGreen, lampBlue);
+        glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), lampRed, lampGreen, lampBlue);
         glBindVertexArray(VAO[16]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
+
+        // Klizac i traka
+        volumeBarIndicatorOffset = (sliderPosition + 0.5f); // Skaliranje u opsegu [0, 1]
+        glUseProgram(lineShader);
+        glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
+        glBindVertexArray(VAO[17]);
+        glDrawArrays(GL_LINES, 0, 2);
+
+        // Krug klizaca
+        float sliderVertices[(CRES + 2) * 2];
+        generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
+        glBindVertexArray(VAO[18]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
+        glUseProgram(radioOnOffButtonShader);
+        glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.4f, 0.4f, 0.4f);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
         glfwSwapBuffers(window);
     }
@@ -581,8 +681,8 @@ int main(void)
 
     // Brisanje resursa
     glDeleteTextures(1, &meshTexture);
-    glDeleteBuffers(17, VBO);
-    glDeleteVertexArrays(17, VAO);
+    glDeleteBuffers(20, VBO);
+    glDeleteVertexArrays(20, VAO);
 
     // Brisanje shader programa
     glDeleteProgram(radioBodyShader);
@@ -590,10 +690,10 @@ int main(void)
     glDeleteProgram(membraneShader);
     glDeleteProgram(lineShader);
     glDeleteProgram(textureShader);
-    glDeleteProgram(radioOnOffButtonShadder);
-    glDeleteProgram(radioOnOffButtonIndicatorShadder);
-    glDeleteProgram(radioOnOffButtonIndicatorLineShadder);
-    glDeleteProgram(radioOnOffLampShadder);
+    glDeleteProgram(radioOnOffButtonShader);
+    glDeleteProgram(radioOnOffButtonIndicatorShader);
+    glDeleteProgram(radioOnOffButtonIndicatorLineShader);
+    glDeleteProgram(radioOnOffLampShader);
 
     // Terminate GLFW (Sve OK - batali program)
     glfwTerminate();
