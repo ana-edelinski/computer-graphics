@@ -19,12 +19,17 @@ float sliderPosition = 0.0f; // Pozicija klizača u opsegu [-0.5, 0.5]
 bool sliderDragging = false;    // Da li korisnik trenutno prevlači klizač
 float speakerMembraneScaleLeft = 1.0f;
 float speakerMembraneScaleRight = 1.0f;
-
+float progressBarWidth = 0.4f; // Širina progress bara (iste širine kao slider)
+float progressBarHeight = 0.02f; // Visina progress bara
+float progressBarY = -0.25f; // Y koordinata (ispod slidera)
+float progressBarFill = 0.0f; // Popunjenost (od 0.0f do 1.0f)
+float lastProgressBarFill = 0.0f; // Memorisana popunjenost progress bara
 
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
 unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
 static unsigned loadImageToTexture(const char* filePath);
 void generateCircle(float* circleVertices, float centerX, float centerY, float radius);
+void updateProgressBar(float sliderPosition, unsigned int VBO);
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -52,20 +57,35 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
             if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
                 // Menjamo stanje radioOn (uključen/isključen)
+                if (radioOn) {
+                    lastProgressBarFill = progressBarFill;
+                    progressBarFill = 0.0f;
+                }
+                else {
+                    progressBarFill = lastProgressBarFill;
+                }
                 radioOn = !radioOn;
                 std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Uključeno" : "Isključeno") << std::endl;
                 return;
             }
-            // Provera za klizač
-            if (normY > -0.23f && normY < -0.17f &&
-                normX >= sliderPosition - 0.05f && normX <= sliderPosition + 0.05f) {
+            
+            // Provera za slider (ograničavanje na područje slidera)
+            const float sliderRadius = 0.05f;
+            float sliderCenterX = sliderPosition;
+            float sliderCenterY = -0.2f;
+
+            dx = normX - sliderCenterX;
+            dy = normY - sliderCenterY;
+
+            if ((dx * dx + dy * dy) <= (sliderRadius * sliderRadius)) {
                 sliderDragging = true;  // Aktivira prevlačenje klizača
+                std::cout << "Slider dragging started" << std::endl;
                 return;
             }
         }
         else if (action == GLFW_RELEASE) {
             if (sliderDragging) {
-                // Prestanak prevlačenja klizača
+                // Prestanak prevlacenja slidera
                 sliderDragging = false;
                 std::cout << "Slider released at position: " << sliderPosition << std::endl;
             }
@@ -81,8 +101,13 @@ void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
 
         float normX = 2.0f * (xPos / width) - 1.0f;
 
-        // Ograniči poziciju klizača
+        // Ograniči poziciju slidera
         sliderPosition = fmaxf(-0.2f, fminf(0.2f, normX));
+
+        // Normalizacija sliderPosition za progress bar popunjenost
+        progressBarFill = (sliderPosition + 0.2f) / 0.4f; // Popunjenost od 0.0 do 1.0
+        lastProgressBarFill = progressBarFill;
+        std::cout << "Slider moved to position: " << sliderPosition << ", Progress bar fill: " << progressBarFill << std::endl;
     }
 }
 
@@ -140,10 +165,10 @@ int main(void)
     unsigned int radioOnOffLampShader = createShader("basic.vert", "basic.frag");
 
 
-    unsigned int VAO[20];
-    unsigned int VBO[20];
-    glGenVertexArrays(20, VAO);
-    glGenBuffers(20, VBO);
+    unsigned int VAO[21];
+    unsigned int VBO[21];
+    glGenVertexArrays(21, VAO);
+    glGenBuffers(21, VBO);
     unsigned int stride;
 
 
@@ -209,7 +234,6 @@ int main(void)
     float smallRightMembraneVertices[(CRES + 2) * 2];
     generateCircle(smallRightMembraneVertices, 0.5, -0.4, 0.10f);
 
-    // RADIO ON/OFF BUTTON INDICATOR LINE
     float verticesRadioButtonIndicatorLine[] =
     {
         // X      Y
@@ -217,10 +241,23 @@ int main(void)
         0.8, 0.165
     };
 
-    // Horizontalna traka za klizač
     float sliderBarVertices[] = {
         -0.2f, -0.2f,
          0.2f, -0.2f
+    };
+
+    float progressBarVertices[] = {
+    -progressBarWidth / 2, progressBarY - progressBarHeight / 2,  // Levo dole
+     progressBarWidth / 2, progressBarY - progressBarHeight / 2,  // Desno dole
+    -progressBarWidth / 2, progressBarY + progressBarHeight / 2,  // Levo gore
+     progressBarWidth / 2, progressBarY + progressBarHeight / 2   // Desno gore
+    };
+
+    float progressBarFillVertices[] = {
+    -progressBarWidth / 2, progressBarY - progressBarHeight / 2,
+    -progressBarWidth / 2, progressBarY + progressBarHeight / 2,
+    -progressBarWidth / 2, progressBarY - progressBarHeight / 2,
+    -progressBarWidth / 2, progressBarY + progressBarHeight / 2
     };
 
     //Povezivanje podataka sa VAO i VBO
@@ -415,14 +452,14 @@ int main(void)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Horizontalna traka za klizač
+    // Horizontalna traka za slider
     glBindVertexArray(VAO[17]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(sliderBarVertices), sliderBarVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Krug klizača
+    // Krug slidera
     float sliderVertices[(CRES + 2) * 2];
     generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
 
@@ -431,6 +468,22 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Progress bar
+    glBindVertexArray(VAO[19]); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[19]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(progressBarVertices), progressBarVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    // Progress bar indikator
+    glBindVertexArray(VAO[20]); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(progressBarFillVertices), progressBarFillVertices, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
@@ -658,21 +711,45 @@ int main(void)
         glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
 
-        // Klizac i traka
+        // Slider i traka
         volumeBarIndicatorOffset = (sliderPosition + 0.5f); // Skaliranje u opsegu [0, 1]
         glUseProgram(lineShader);
         glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
         glBindVertexArray(VAO[17]);
         glDrawArrays(GL_LINES, 0, 2);
 
-        // Krug klizaca
+        // Krug slidera
         float sliderVertices[(CRES + 2) * 2];
         generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
+
         glBindVertexArray(VAO[18]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[18]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_DYNAMIC_DRAW);
+
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
         glUseProgram(radioOnOffButtonShader);
         glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.4f, 0.4f, 0.4f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
+
+        // Progress bar
+        updateProgressBar(sliderPosition, VBO[20]);
+
+        glUseProgram(lineShader);
+        glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
+        glBindVertexArray(VAO[19]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Progress bar indikator
+        if (!radioOn) {
+            glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f); // Siva boja kada je isključen
+        }
+        else {
+            glUniform3f(glGetUniformLocation(lineShader, "color"), 0.0f, 1.0f, 0.0f); // Zelena kada je uključen
+        }
+        glBindVertexArray(VAO[20]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
 
         glfwSwapBuffers(window);
     }
@@ -681,8 +758,8 @@ int main(void)
 
     // Brisanje resursa
     glDeleteTextures(1, &meshTexture);
-    glDeleteBuffers(20, VBO);
-    glDeleteVertexArrays(20, VAO);
+    glDeleteBuffers(21, VBO);
+    glDeleteVertexArrays(21, VAO);
 
     // Brisanje shader programa
     glDeleteProgram(radioBodyShader);
@@ -819,3 +896,27 @@ static unsigned loadImageToTexture(const char* filePath) {
     stbi_image_free(ImageData);
     return Texture;
 }
+
+void updateProgressBar(float sliderPosition, unsigned int VBO) {
+    float progressBarWidth = 0.4f;
+    float progressBarHeight = 0.02f;
+    float progressBarY = -0.25f;
+
+    // Računanje popunjenosti
+    float progressBarFill = (sliderPosition + 0.2f) / 0.4f; // Normalizacija vrednosti u opsegu [0.0, 1.0]
+    float filledWidth = progressBarFill * progressBarWidth;
+
+    // Definisanje vertekse za popunjeni deo progress bara
+    float progressBarFillVertices[] = {
+        -progressBarWidth / 2, progressBarY - progressBarHeight / 2,
+        -progressBarWidth / 2 + filledWidth, progressBarY - progressBarHeight / 2,
+        -progressBarWidth / 2, progressBarY + progressBarHeight / 2,
+        -progressBarWidth / 2 + filledWidth, progressBarY + progressBarHeight / 2
+    };
+
+    // Ažuriranje VBO podataka
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(progressBarFillVertices), progressBarFillVertices);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
