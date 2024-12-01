@@ -24,6 +24,9 @@ float progressBarHeight = 0.02f; // Visina progress bara
 float progressBarY = -0.25f; // Y koordinata (ispod slidera)
 float progressBarFill = 0.0f; // Popunjenost (od 0.0f do 1.0f)
 float lastProgressBarFill = 0.0f; // Memorisana popunjenost progress bara
+float displayY = -0.35f; // Y koordinata displeja
+float displayWidth = 0.4f; // Širina displeja (ista kao progress bar)
+float displayHeight = 0.1f; // Visina displeja
 
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
 unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
@@ -165,10 +168,10 @@ int main(void)
     unsigned int radioOnOffLampShader = createShader("basic.vert", "basic.frag");
 
 
-    unsigned int VAO[21];
-    unsigned int VBO[21];
-    glGenVertexArrays(21, VAO);
-    glGenBuffers(21, VBO);
+    unsigned int VAO[23];
+    unsigned int VBO[23];
+    glGenVertexArrays(23, VAO);
+    glGenBuffers(23, VBO);
     unsigned int stride;
 
 
@@ -259,6 +262,14 @@ int main(void)
     -progressBarWidth / 2, progressBarY - progressBarHeight / 2,
     -progressBarWidth / 2, progressBarY + progressBarHeight / 2
     };
+
+    float displayVertices[] = {
+        -displayWidth / 2, displayY - displayHeight / 2, // Levo dole
+         displayWidth / 2, displayY - displayHeight / 2, // Desno dole
+        -displayWidth / 2, displayY + displayHeight / 2, // Levo gore
+         displayWidth / 2, displayY + displayHeight / 2  // Desno gore
+    };
+
 
     //Povezivanje podataka sa VAO i VBO
 
@@ -481,6 +492,15 @@ int main(void)
     glBindVertexArray(VAO[20]); 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(progressBarFillVertices), progressBarFillVertices, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+
+    // Displej
+    glBindVertexArray(VAO[21]); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[21]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -753,7 +773,11 @@ int main(void)
         glBindVertexArray(VAO[20]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-
+        // Renderovanje displeja
+        glUseProgram(radioBodyShader); // Shader za prikaz displeja
+        glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.0f, 0.0f, 0.0f); // Crna boja
+        glBindVertexArray(VAO[21]); // Displej VAO
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         glfwSwapBuffers(window);
     }
@@ -762,8 +786,9 @@ int main(void)
 
     // Brisanje resursa
     glDeleteTextures(1, &meshTexture);
-    glDeleteBuffers(21, VBO);
-    glDeleteVertexArrays(21, VAO);
+
+    glDeleteBuffers(23, VBO);
+    glDeleteVertexArrays(23, VAO);
 
     // Brisanje shader programa
     glDeleteProgram(radioBodyShader);
