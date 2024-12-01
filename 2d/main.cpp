@@ -505,8 +505,11 @@ int main(void)
             volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
             membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
             double time = glfwGetTime();
-            speakerMembraneScaleLeft = 1.0f + membraneAmplitude * sin(time * 20.0f);
-            speakerMembraneScaleRight = 1.0f + membraneAmplitude * cos(time * 20.0f);
+            
+            // Sinhronizovane oscilacije zvučnika
+            float oscillation = 1.0f + membraneAmplitude * sin(time * 20.0f);
+            speakerMembraneScaleLeft = oscillation;
+            speakerMembraneScaleRight = oscillation;
         }
         else {
             // Resetovanje skale kada je radio isključen ili slider skroz levo
@@ -519,8 +522,9 @@ int main(void)
 
         // Animacija vibracija membrane (sinusoidni pokret)
         double time = glfwGetTime();
-        speakerMembraneScaleLeft = 1.0f + membraneAmplitude * sin(time * 20.0f);
-        speakerMembraneScaleRight = 1.0f + membraneAmplitude * cos(time * 20.0f);
+        float oscillation = 1.0f + membraneAmplitude * sin(time * 20.0f);
+        speakerMembraneScaleLeft = oscillation;
+        speakerMembraneScaleRight = oscillation;
 
 
         // Brisanje ekrana
