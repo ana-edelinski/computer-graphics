@@ -279,63 +279,49 @@
              displayWidth / 2, displayY + displayHeight / 2  // Desno gore
         };
 
-        float AMFMRailVertices[] =
-        {
-            // X      Y
-            -0.2, -0.5,
-            -0.05, -0.5,
-            -0.2,  -0.25,
-            -0.05,  -0.25
+        float AMFMRailVertices[] = {
+            -0.1f, -0.53f, 
+             0.1f, -0.53f, 
+            -0.1f, -0.43f, 
+             0.1f, -0.43f  
         };
 
-        float AMFMSwitchVertices[] =
-        {
-            // X      Y
-            -0.2, -0.5,
-            -0.05, -0.5,
-            -0.2,  -0.4,
-            -0.05,  -0.4
+        float AMFMSwitchVertices[] = {
+            -0.05f, -0.53f,   
+             0.05f, -0.53f,   
+            -0.05f, -0.43f,   
+             0.05f, -0.43f    
         };
 
-        float AMVertices[] =    //izmena??
-        {   //X    Y      S    T 
-            -0.2, -0.2, 0.0, 1.0,
-            -0.05, -0.2, 1.0, 1.0,
-            -0.2,  -0.1, 0.0, 0.0,
-            -0.05,  -0.1, 1.0, 0.0
+        float AMVertices[] = {
+            -displayWidth / 2, -0.53f, 0.0, 1.0,  
+            -displayWidth / 4, -0.53f, 1.0, 1.0,  
+            -displayWidth / 2, -0.43f, 0.0, 0.0,  
+            -displayWidth / 4, -0.43f, 1.0, 0.0   
         };
 
-
-        float FMVertices[] =    //izmena??
-        {   //X    Y      S    T 
-            -0.2, -0.65, 0.0, 1.0,  // Gornja leva
-            -0.05, -0.65, 1.0, 1.0, // Gornja desna
-            -0.2,  -0.55, 0.0, 0.0, // Donja leva
-            -0.05,  -0.55, 1.0, 0.0  // Donja desna
+        float FMVertices[] = {
+             displayWidth / 4, -0.53f, 0.0, 1.0,  
+             displayWidth / 2, -0.53f, 1.0, 1.0,  
+             displayWidth / 4, -0.43f, 0.0, 0.0,  
+             displayWidth / 2, -0.43f, 1.0, 0.0   
         };
 
-        float AMFMRailOutlineVertices[] =
-        {
-            // X      Y
-            -0.2, -0.5,
-            -0.05, -0.5,
-            -0.05,  -0.25,
-            -0.2,  -0.25,
-            -0.2, -0.5
+        float AMFMRailOutlineVertices[] = {
+            -displayWidth / 4, -0.53f,
+             displayWidth / 4, -0.53f,
+             displayWidth / 4, -0.43f,
+            -displayWidth / 4, -0.43f,
+            -displayWidth / 4, -0.53f
         };
 
-        float AMFMSwitchOutlineVertices[] =
-        {
-            // X      Y
-            -0.2, -0.5,
-            -0.05, -0.5,
-            -0.05,  -0.4,
-            -0.2,  -0.4,
-            -0.2, -0.5
+        float AMFMSwitchOutlineVertices[] = {
+            -0.05, -0.53f,
+             0.05, -0.53f,
+             0.05, -0.43f,
+            -0.05, -0.43f,
+            -0.05, -0.53f
         };
-
-
-
 
         //Povezivanje podataka sa VAO i VBO
 
@@ -928,8 +914,8 @@
 
             // AM/FM SWITCH
             glUseProgram(AMFMSwitchShader);
-            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), 0.0f, FMon ? 0.0f : -0.15f);
-            glUniform3f(glGetUniformLocation(AMFMSwitchShader, "color"), 0.5f, 0.5f, 0.5f);
+            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
+            glUniform3f(glGetUniformLocation(AMFMSwitchShader, "color"), 0.8f, 0.8f, 0.8f);
             glBindVertexArray(VAO[23]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -960,24 +946,12 @@
 
             // AM/FM Switch Outlines
             glUseProgram(AMFMSwitchOutlineShader);
-            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), 0.0f, FMon ? 0.0f : 0.15f);
-            glUniform3f(glGetUniformLocation(AMFMSwitchOutlineShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
             glBindVertexArray(VAO[27]);
             glDrawArrays(GL_LINES, 0, 2);
             glDrawArrays(GL_LINES, 1, 2);
             glDrawArrays(GL_LINES, 2, 2);
             glDrawArrays(GL_LINES, 3, 2);
-
-            //// Renderovanje AM/FM Rail outline-a
-            //glUseProgram(lineShader);
-            //glUniform3f(glGetUniformLocation(lineShader, "color"), 0.0f, 0.0f, 0.0f); // Crna boja za outline
-            //glBindVertexArray(VAO[26]);
-            //glLineWidth(1.5f); // Podešavanje debljine linije
-            //glDrawArrays(GL_LINE_LOOP, 0, 4);
-
-            //// Renderovanje AM/FM Switch outline-a
-            //glBindVertexArray(VAO[27]);
-            //glDrawArrays(GL_LINE_LOOP, 0, 4);
 
 
             glfwSwapBuffers(window);
