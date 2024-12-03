@@ -177,9 +177,8 @@
         unsigned int AMShader = createShader("texture.vert", "texture.frag");
         unsigned int FMShader = createShader("texture.vert", "texture.frag");
         unsigned int antennaBaseShader = createShader("basic.vert", "basic.frag");
-        //unsigned int antennaBaseOutlineShadder = createShader("basic.vert", "basic.frag");
         unsigned int antennaShader = createShader("basic.vert", "basic.frag");
-        //unsigned int antennaOutlineShadder = createShader("basic.vert", "basic.frag");
+        unsigned int signatureShader = createShader("texture.vert", "texture.frag");
 
         unsigned int VAO[32];
         unsigned int VBO[32];
@@ -290,18 +289,19 @@
         };
 
         float AMVertices[] = {
-            -displayWidth / 2, -0.53f, 0.0, 1.0,  
-            -displayWidth / 4, -0.53f, 1.0, 1.0,  
-            -displayWidth / 2, -0.43f, 0.0, 0.0,  
-            -displayWidth / 4, -0.43f, 1.0, 0.0   
+            -displayWidth / 2, -0.53f, 0.0, 0.0,  // Levo dole
+            -displayWidth / 4, -0.53f, 1.0, 0.0,  // Desno dole
+            -displayWidth / 2, -0.43f, 0.0, 1.0,  // Levo gore
+            -displayWidth / 4, -0.43f, 1.0, 1.0   // Desno gore
         };
 
         float FMVertices[] = {
-             displayWidth / 4, -0.53f, 0.0, 1.0,  
-             displayWidth / 2, -0.53f, 1.0, 1.0,  
-             displayWidth / 4, -0.43f, 0.0, 0.0,  
-             displayWidth / 2, -0.43f, 1.0, 0.0   
+             displayWidth / 4, -0.53f, 0.0, 0.0,  // Levo dole
+             displayWidth / 2, -0.53f, 1.0, 0.0,  // Desno dole
+             displayWidth / 4, -0.43f, 0.0, 1.0,  // Levo gore
+             displayWidth / 2, -0.43f, 1.0, 1.0   // Desno gore
         };
+
 
         float AMFMRailOutlineVertices[] = {
             -displayWidth / 4, -0.53f,
@@ -338,6 +338,14 @@
             -0.80f, 0.9f,  // Donji desni ugao vrha antene
             -0.85f, 0.95f, // Gornji levi ugao vrha antene
             -0.80f, 0.95f  // Gornji desni ugao vrha antene
+        };
+
+        float signatureVertices[] =
+        {  
+            0.0, 0.85, 0.0, 0.0,
+            1.0, 0.85, 1.0, 0.0,
+            0.0,  1.0, 0.0, 1.0,
+            1.0,  1.0, 1.0, 1.0
         };
 
 
@@ -666,6 +674,26 @@
         glBufferData(GL_ARRAY_BUFFER, sizeof(antennaTipVertices), antennaTipVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
+
+        // Potpis
+        stride = (2 + 2) * sizeof(float);
+        glBindVertexArray(VAO[30]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[30]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(signatureVertices), signatureVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        unsigned signatureTexture = loadImageToTexture("resources/potpis.png");
+        glBindTexture(GL_TEXTURE_2D, signatureTexture);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        unsigned uTexLoc4 = glGetUniformLocation(signatureShader, "uTex");
+        glUniform1i(uTexLoc4, 0);
 
 
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -1005,6 +1033,14 @@
             glDrawArrays(GL_LINES, 2, 2);
             glDrawArrays(GL_LINES, 3, 2);
 
+            // Potpis
+            glUseProgram(signatureShader);
+            glBindVertexArray(VAO[30]);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, signatureTexture);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
 
             glfwSwapBuffers(window);
         }
@@ -1125,6 +1161,7 @@
     }
 
     static unsigned loadImageToTexture(const char* filePath) {
+        stbi_set_flip_vertically_on_load(true);
         int TextureWidth, TextureHeight, TextureChannels;
         unsigned char* ImageData = stbi_load(filePath, &TextureWidth, &TextureHeight, &TextureChannels, 0);
         if (ImageData == NULL) {

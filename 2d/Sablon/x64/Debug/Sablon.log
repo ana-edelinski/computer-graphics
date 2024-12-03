@@ -4,69 +4,71 @@ D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(53,29): warning C42
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(74,86): warning C4566: character represented by universal-character-name '\u010D' cannot be represented in the current code page (1252)
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(74,101): warning C4566: character represented by universal-character-name '\u010D' cannot be represented in the current code page (1252)
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(108,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(192,13): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(191,13): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(191,19): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(192,14): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(192,19): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(193,14): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(193,19): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(194,13): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(193,13): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(193,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(194,14): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(194,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(195,14): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(195,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(198,19): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(199,19): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(200,19): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(201,19): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(202,19): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(205,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(206,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(207,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(208,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(209,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(213,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(214,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(215,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(216,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(217,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(221,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(222,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(223,20): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(224,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(225,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(234,52): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(237,52): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(240,57): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(243,57): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(233,52): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(236,52): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(239,57): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(242,57): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(247,13): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(248,13): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(249,13): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(249,18): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(248,18): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(315,13): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(316,14): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(317,14): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(318,13): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(319,13): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(441,17): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(442,31): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(447,63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(448,67): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(458,13): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(459,40): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(463,81): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(464,85): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(474,13): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(475,45): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(479,91): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(480,95): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(498,13): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(499,29): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(503,59): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(504,63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(514,13): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(515,34): warning C4305: '=': truncation from 'double' to 'float'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(519,69): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(520,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(693,35): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(708,31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(778,79): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(785,78): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(791,79): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(798,78): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(847,32): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1191,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1196,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(345,18): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(346,18): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(449,17): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(450,31): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(455,63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(456,67): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(466,13): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(467,40): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(471,81): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(472,85): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(482,13): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(483,45): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(487,91): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(488,95): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(506,13): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(507,29): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(511,59): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(512,63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(522,13): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(523,34): warning C4305: '=': truncation from 'double' to 'float'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(527,69): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(528,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(721,35): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(736,31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(806,79): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(813,78): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(819,79): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(826,78): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(875,32): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1228,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1233,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Sablon.vcxproj -> D:\Fakultet\7\grafika\projekat\computer-graphics\2d\x64\Debug\Sablon.exe
