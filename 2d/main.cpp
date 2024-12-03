@@ -28,6 +28,7 @@
     float displayWidth = 0.4f; // Širina displeja (ista kao progress bar)
     float displayHeight = 0.1f; // Visina displeja
     bool FMon = true;
+    float antennaOffset = -0.55f; // Antena je uvučena na početku
 
     unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
     unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
@@ -175,12 +176,15 @@
         unsigned int AMFMSwitchOutlineShader = createShader("basic.vert", "basic.frag");
         unsigned int AMShader = createShader("texture.vert", "texture.frag");
         unsigned int FMShader = createShader("texture.vert", "texture.frag");
+        unsigned int antennaBaseShader = createShader("basic.vert", "basic.frag");
+        //unsigned int antennaBaseOutlineShadder = createShader("basic.vert", "basic.frag");
+        unsigned int antennaShader = createShader("basic.vert", "basic.frag");
+        //unsigned int antennaOutlineShadder = createShader("basic.vert", "basic.frag");
 
-
-        unsigned int VAO[28];
-        unsigned int VBO[28];
-        glGenVertexArrays(28, VAO);
-        glGenBuffers(28, VBO);
+        unsigned int VAO[32];
+        unsigned int VBO[32];
+        glGenVertexArrays(32, VAO);
+        glGenBuffers(32, VBO);
         unsigned int stride;
 
 
@@ -190,14 +194,6 @@
             -0.9,  0.3,  
              0.9,  0.3  
         };
-
-        float antennaVertices[] = {
-            -0.8, 0.3,   
-            -0.7, 0.3,   
-            -0.8, 0.9,   
-            -0.7, 0.9    
-        };
-
 
         float rightSpeakerVertices[] = {
             0.25, -0.65,  
@@ -323,6 +319,28 @@
             -0.05, -0.53f
         };
 
+        float antennaBaseVertices[] = {
+            -0.85f, 0.3f,  // Donji levi ugao osnove antene
+            -0.80f, 0.3f,  // Donji desni ugao osnove antene
+            -0.85f, 0.35f, // Gornji levi ugao osnove antene
+            -0.80f, 0.35f  // Gornji desni ugao osnove antene
+        };
+
+        float antennaVertices[] = {
+            -0.8375f, 0.35f, // Donji levi ugao štapa antene
+            -0.8125f, 0.35f, // Donji desni ugao štapa antene
+            -0.8375f, 0.9f,  // Gornji levi ugao štapa antene
+            -0.8125f, 0.9f   // Gornji desni ugao štapa antene
+        };
+
+        float antennaTipVertices[] = {
+            -0.85f, 0.9f,  // Donji levi ugao vrha antene
+            -0.80f, 0.9f,  // Donji desni ugao vrha antene
+            -0.85f, 0.95f, // Gornji levi ugao vrha antene
+            -0.80f, 0.95f  // Gornji desni ugao vrha antene
+        };
+
+
         //Povezivanje podataka sa VAO i VBO
 
         // Telo radija
@@ -333,25 +351,17 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-        // Antena
+        // Levi zvučnik
         glBindVertexArray(VAO[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(antennaVertices), antennaVertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        glBindVertexArray(0);
-
-        // Levi zvučnik
-        glBindVertexArray(VAO[2]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerVertices), leftSpeakerVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
         // Desni zvučnik
-        glBindVertexArray(VAO[3]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+        glBindVertexArray(VAO[2]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerVertices), rightSpeakerVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -365,40 +375,40 @@
         }
 
         // Leva membrana
-        glBindVertexArray(VAO[4]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+        glBindVertexArray(VAO[3]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftMembraneVertices), leftMembraneVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);   //deaktivira VAO
 
         // Desna membrana
-        glBindVertexArray(VAO[5]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
+        glBindVertexArray(VAO[4]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(rightMembraneVertices), rightMembraneVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
         // Leva membrana mala
-        glBindVertexArray(VAO[6]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
+        glBindVertexArray(VAO[5]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(smallLeftMembraneVertices), smallLeftMembraneVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
         // Desna membrana mala
-        glBindVertexArray(VAO[7]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
+        glBindVertexArray(VAO[6]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(smallRightMembraneVertices), smallRightMembraneVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
         // Leva mrezica
-        glBindVertexArray(VAO[8]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
+        glBindVertexArray(VAO[7]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerMeshVertices), leftSpeakerMeshVertices, GL_STATIC_DRAW);
         // Pozicija (layout(location = 0))
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
@@ -409,8 +419,8 @@
         glBindVertexArray(0);   //deaktivira vao
 
         // Desna mrezica
-        glBindVertexArray(VAO[9]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[9]);
+        glBindVertexArray(VAO[8]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerMeshVertices), rightSpeakerMeshVertices, GL_STATIC_DRAW);    
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -419,8 +429,8 @@
         glBindVertexArray(0);
 
         // Horizontalna linija
-        glBindVertexArray(VAO[10]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[10]);
+        glBindVertexArray(VAO[9]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[9]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(separatorLineVertices), separatorLineVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -437,8 +447,8 @@
             radioOnOffButton[2 + 2 * i] = radioOnOffButton[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
             radioOnOffButton[2 + 2 * i + 1] = radioOnOffButton[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
         }
-        glBindVertexArray(VAO[11]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[11]);
+        glBindVertexArray(VAO[10]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[10]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButton), radioOnOffButton, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -453,8 +463,8 @@
             radioOnOffButtonIndicator[2 + 2 * i] = radioOnOffButtonIndicator[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
             radioOnOffButtonIndicator[2 + 2 * i + 1] = radioOnOffButtonIndicator[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
         }
-        glBindVertexArray(VAO[12]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[12]);
+        glBindVertexArray(VAO[11]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[11]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButtonIndicator), radioOnOffButtonIndicator, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -469,16 +479,16 @@
             radioOnOffButtonIndicatorInner[2 + 2 * i] = radioOnOffButtonIndicatorInner[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
             radioOnOffButtonIndicatorInner[2 + 2 * i + 1] = radioOnOffButtonIndicatorInner[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
         }
-        glBindVertexArray(VAO[13]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[13]);
+        glBindVertexArray(VAO[12]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[12]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffButtonIndicatorInner), radioOnOffButtonIndicatorInner, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         // RADIO ON/OFF BUTTON INDICATOR LINE
         stride = 2 * sizeof(float);
-        glBindVertexArray(VAO[14]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[14]);
+        glBindVertexArray(VAO[13]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[13]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(verticesRadioButtonIndicatorLine), verticesRadioButtonIndicatorLine, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
@@ -493,8 +503,8 @@
             radioOnOffLamp[2 + 2 * i] = radioOnOffLamp[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
             radioOnOffLamp[2 + 2 * i + 1] = radioOnOffLamp[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
         }
-        glBindVertexArray(VAO[15]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[15]);
+        glBindVertexArray(VAO[14]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[14]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffLamp), radioOnOffLamp, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -509,15 +519,15 @@
             radioOnOffLampLight[2 + 2 * i] = radioOnOffLampLight[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
             radioOnOffLampLight[2 + 2 * i + 1] = radioOnOffLampLight[1] + r * sin((3.141592 / 180) * (i * 360 / CRES));
         }
-        glBindVertexArray(VAO[16]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[16]);
+        glBindVertexArray(VAO[15]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[15]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(radioOnOffLampLight), radioOnOffLampLight, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         // Horizontalna traka za slider
-        glBindVertexArray(VAO[17]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
+        glBindVertexArray(VAO[16]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[16]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(sliderBarVertices), sliderBarVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
         glEnableVertexAttribArray(0);
@@ -526,23 +536,23 @@
         float sliderVertices[(CRES + 2) * 2];
         generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
 
-        glBindVertexArray(VAO[18]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[18]);
+        glBindVertexArray(VAO[17]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
         glEnableVertexAttribArray(0);
 
         // Progress bar
-        glBindVertexArray(VAO[19]); 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[19]);
+        glBindVertexArray(VAO[18]); 
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[18]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(progressBarVertices), progressBarVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
         // Progress bar indikator
-        glBindVertexArray(VAO[20]); 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
+        glBindVertexArray(VAO[19]); 
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[19]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(progressBarFillVertices), progressBarFillVertices, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -550,8 +560,8 @@
 
 
         // Displej
-        glBindVertexArray(VAO[21]); 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[21]);
+        glBindVertexArray(VAO[20]); 
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -559,24 +569,24 @@
 
         // AM/FM Rail
         stride = 2 * sizeof(float);
-        glBindVertexArray(VAO[22]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[22]);
+        glBindVertexArray(VAO[21]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[21]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(AMFMRailVertices), AMFMRailVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
 
         // AM/FM Switch
         stride = 2 * sizeof(float);
-        glBindVertexArray(VAO[23]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[23]);
+        glBindVertexArray(VAO[22]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[22]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(AMFMSwitchVertices), AMFMSwitchVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
 
         // AM
         stride = (2 + 2) * sizeof(float);
-        glBindVertexArray(VAO[24]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[24]);
+        glBindVertexArray(VAO[23]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[23]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(AMVertices), AMVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
@@ -595,8 +605,8 @@
 
         // FM
         stride = (2 + 2) * sizeof(float);
-        glBindVertexArray(VAO[25]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[25]);
+        glBindVertexArray(VAO[24]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[24]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(FMVertices), FMVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
@@ -615,8 +625,8 @@
 
         // AM/FM Rail Outline
         stride = 2 * sizeof(float);
-        glBindVertexArray(VAO[26]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[26]);
+        glBindVertexArray(VAO[25]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[25]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(AMFMRailOutlineVertices), AMFMRailOutlineVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
         glEnableVertexAttribArray(0);
@@ -624,12 +634,38 @@
 
         // AM/FM Switch Outline
         stride = 2 * sizeof(float);
-        glBindVertexArray(VAO[27]);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[27]);
+        glBindVertexArray(VAO[26]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[26]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(AMFMSwitchOutlineVertices), AMFMSwitchOutlineVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
+
+        // Antena osnova
+        stride = 2 * sizeof(float);
+        glBindVertexArray(VAO[27]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[27]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(antennaBaseVertices), antennaBaseVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindVertexArray(0);
+
+        // Antena
+        stride = 2 * sizeof(float);
+        glBindVertexArray(VAO[28]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[28]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(antennaVertices), antennaVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindVertexArray(0);
+
+        // Antena vrh
+        stride = 2 * sizeof(float);
+        glBindVertexArray(VAO[29]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[29]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(antennaTipVertices), antennaTipVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
 
 
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -680,6 +716,27 @@
 
             // [KOD ZA CRTANJE]
 
+            // Antena
+            glUseProgram(antennaShader);
+            glUniform3f(glGetUniformLocation(antennaShader, "color"), 0.8f, 0.8f, 0.8f);
+            glUniform2f(glGetUniformLocation(antennaShader, "offset"), 0.0f, antennaOffset); // Pomeranje tela antene
+            glBindVertexArray(VAO[28]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Antena vrh
+            glUseProgram(antennaShader);
+            glUniform3f(glGetUniformLocation(antennaShader, "color"), 0.8f, 0.8f, 0.8f); 
+            glUniform2f(glGetUniformLocation(antennaShader, "offset"), 0.0f, antennaOffset); // Pomeranje vrha antene
+            glBindVertexArray(VAO[29]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Antena osnova
+            glUseProgram(antennaBaseShader);
+            glUniform3f(glGetUniformLocation(antennaBaseShader, "color"), 0.5f, 0.5f, 0.5f);
+            glUniform2f(glGetUniformLocation(antennaBaseShader, "offset"), 0.0f, 0.0f); // Nema početnog pomeranja
+            glBindVertexArray(VAO[27]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
             glUseProgram(radioBodyShader);
             unsigned int uBodyColorLoc = glGetUniformLocation(radioBodyShader, "color");
 
@@ -698,22 +755,17 @@
             glBindVertexArray(VAO[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Antena
-            glUniform3f(uBodyColorLoc, 176 / 255.0f, 176 / 255.0f, 176 / 255.0f);
-            glBindVertexArray(VAO[1]);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
             glUseProgram(speakerShader);
             unsigned int uSpeakerColorLoc = glGetUniformLocation(speakerShader, "color");
 
             // Levi zvučnik
             glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
-            glBindVertexArray(VAO[2]);
+            glBindVertexArray(VAO[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Desni zvučnik
             glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
-            glBindVertexArray(VAO[3]);
+            glBindVertexArray(VAO[2]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 
@@ -726,26 +778,26 @@
             glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
             glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.3f, 0.3f, 0.3f); // Svetlija boja za velike membrane
-            glBindVertexArray(VAO[4]);
+            glBindVertexArray(VAO[3]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
             // Desna membrana - velika
             glUniform2f(glGetUniformLocation(membraneShader, "center"), 0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleRight);
-            glBindVertexArray(VAO[5]);
+            glBindVertexArray(VAO[4]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
             // Leva membrana - mala
             glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
             glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.2f, 0.2f, 0.2f); // Tamnija boja za male membrane
-            glBindVertexArray(VAO[6]);
+            glBindVertexArray(VAO[5]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
             // Desna membrana - mala
             glUniform2f(glGetUniformLocation(membraneShader, "center"), 0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleRight);
-            glBindVertexArray(VAO[7]);
+            glBindVertexArray(VAO[6]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
             glUseProgram(lineShader);
@@ -753,7 +805,7 @@
             // Horizontalna linija
             unsigned int uLineColorLoc = glGetUniformLocation(lineShader, "color");
             glUniform3f(uLineColorLoc, 0.0f, 0.0f, 0.0f);
-            glBindVertexArray(VAO[10]);
+            glBindVertexArray(VAO[9]);
             glDrawArrays(GL_LINES, 0, 2);
 
 
@@ -765,14 +817,14 @@
             glUniform1i(textureUniform, 0);  // Teksturna jedinica 0
 
             // Mrezica levog zvucnika
-            glBindVertexArray(VAO[8]);
+            glBindVertexArray(VAO[7]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, meshTexture);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glBindVertexArray(0);
 
             // Mrezica desnog zvucnika
-            glBindVertexArray(VAO[9]);
+            glBindVertexArray(VAO[8]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glBindTexture(GL_TEXTURE_2D, 0);
             glBindVertexArray(0);
@@ -804,7 +856,7 @@
 
             // ON/OFF Button
             glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.2f, 0.2f, 0.2f);
-            glBindVertexArray(VAO[11]);
+            glBindVertexArray(VAO[10]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButton) / (2 * sizeof(float)));
 
             // Renderovanje ON/OFF button indikatora
@@ -819,13 +871,13 @@
             glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), indicatorR, indicatorG, indicatorB);
 
             // Krug ON/OFF button indikatora
-            glBindVertexArray(VAO[12]);
+            glBindVertexArray(VAO[11]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicator) / (2 * sizeof(float)));
 
 
             // Unutrasnji deo ON/OFF button indikatora
             glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), 0.2f, 0.2f, 0.2f);
-            glBindVertexArray(VAO[13]);
+            glBindVertexArray(VAO[12]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicatorInner) / (2 * sizeof(float)));
 
 
@@ -843,7 +895,7 @@
             glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorLineShader, "color"), lineR, lineG, lineB);
 
             // Srednja linija na ON/OFF button indikatoru
-            glBindVertexArray(VAO[14]);
+            glBindVertexArray(VAO[13]);
             glLineWidth(2.0f);
             glDrawArrays(GL_LINES, 0, 2);
 
@@ -853,12 +905,12 @@
 
             // Lampica osnovna
             glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), 0.2f, 0.2f, 0.2f);
-            glBindVertexArray(VAO[15]);
+            glBindVertexArray(VAO[14]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
             // Boja lampice
             glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), lampRed, lampGreen, lampBlue);
-            glBindVertexArray(VAO[16]);
+            glBindVertexArray(VAO[15]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
 
@@ -866,15 +918,15 @@
             volumeBarIndicatorOffset = (sliderPosition + 0.5f); // Skaliranje u opsegu [0, 1]
             glUseProgram(lineShader);
             glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
-            glBindVertexArray(VAO[17]);
+            glBindVertexArray(VAO[16]);
             glDrawArrays(GL_LINES, 0, 2);
 
             // Krug slidera
             float sliderVertices[(CRES + 2) * 2];
             generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
 
-            glBindVertexArray(VAO[18]);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO[18]);
+            glBindVertexArray(VAO[17]);
+            glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
             glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_DYNAMIC_DRAW);
 
             //glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
@@ -883,11 +935,11 @@
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
             // Progress bar
-            updateProgressBar(sliderPosition, VBO[20]);
+            updateProgressBar(sliderPosition, VBO[19]);
 
             glUseProgram(lineShader);
             glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
-            glBindVertexArray(VAO[19]);
+            glBindVertexArray(VAO[18]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Progress bar indikator
@@ -897,31 +949,31 @@
             else {
                 glUniform3f(glGetUniformLocation(lineShader, "color"), 0.0f, 1.0f, 0.0f); // Zelena kada je uključen
             }
-            glBindVertexArray(VAO[20]);
+            glBindVertexArray(VAO[19]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Renderovanje displeja
             glUseProgram(radioBodyShader); // Shader za prikaz displeja
             glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.0f, 0.0f, 0.0f); // Crna boja
-            glBindVertexArray(VAO[21]); // Displej VAO
+            glBindVertexArray(VAO[20]); // Displej VAO
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // AM/FM RAIL
             glUseProgram(AMFMRailShader);
             glUniform3f(glGetUniformLocation(AMFMRailShader, "color"), 0.45f, 0.45f, 0.45f);
-            glBindVertexArray(VAO[22]);
+            glBindVertexArray(VAO[21]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // AM/FM SWITCH
             glUseProgram(AMFMSwitchShader);
             glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
             glUniform3f(glGetUniformLocation(AMFMSwitchShader, "color"), 0.8f, 0.8f, 0.8f);
-            glBindVertexArray(VAO[23]);
+            glBindVertexArray(VAO[22]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // AM
             glUseProgram(AMShader);
-            glBindVertexArray(VAO[24]);
+            glBindVertexArray(VAO[23]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, AMTexture);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -929,7 +981,7 @@
 
             // FM
             glUseProgram(AMShader);
-            glBindVertexArray(VAO[25]);
+            glBindVertexArray(VAO[24]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, FMTexture);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -938,7 +990,7 @@
             // AM/FM Rail Outlines
             glUseProgram(AMFMRailOutlineShader);
             glUniform3f(glGetUniformLocation(AMFMRailOutlineShader, "color"), 0.0f, 0.0f, 0.0f);
-            glBindVertexArray(VAO[26]);
+            glBindVertexArray(VAO[25]);
             glDrawArrays(GL_LINES, 0, 2);
             glDrawArrays(GL_LINES, 1, 2);
             glDrawArrays(GL_LINES, 2, 2);
@@ -947,7 +999,7 @@
             // AM/FM Switch Outlines
             glUseProgram(AMFMSwitchOutlineShader);
             glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
-            glBindVertexArray(VAO[27]);
+            glBindVertexArray(VAO[26]);
             glDrawArrays(GL_LINES, 0, 2);
             glDrawArrays(GL_LINES, 1, 2);
             glDrawArrays(GL_LINES, 2, 2);
@@ -962,8 +1014,8 @@
         // Brisanje resursa
         glDeleteTextures(1, &meshTexture);
 
-        glDeleteBuffers(28, VBO);
-        glDeleteVertexArrays(28, VAO);
+        glDeleteBuffers(32, VBO);
+        glDeleteVertexArrays(32, VAO);
 
         // Brisanje shader programa
         glDeleteProgram(radioBodyShader);
@@ -1133,6 +1185,16 @@
             break;
         case GLFW_KEY_A:
             FMon = false;
+            break;
+        case GLFW_KEY_UP:
+            if (antennaOffset < -0.2) {
+                antennaOffset = round((antennaOffset + 0.01f) * 100.0) / 100.0;
+            }
+            break;
+        case GLFW_KEY_DOWN:
+            if (antennaOffset > -0.55f) { 
+                antennaOffset = round((antennaOffset - 0.01f) * 100.0) / 100.0;
+            }
             break;
         }
     }
