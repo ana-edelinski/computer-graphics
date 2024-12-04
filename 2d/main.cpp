@@ -29,6 +29,7 @@
     float displayHeight = 0.1f; // Visina displeja
     bool FMon = true;
     float antennaOffset = -0.55f; // Antena je uvučena na početku
+    float scaleIndicatorOffset = 0.0f;
 
     unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
     unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
@@ -36,6 +37,7 @@
     void generateCircle(float* circleVertices, float centerX, float centerY, float radius);
     void updateProgressBar(float sliderPosition, unsigned int VBO);
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
+    void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 
     void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -179,11 +181,13 @@
         unsigned int antennaBaseShader = createShader("basic.vert", "basic.frag");
         unsigned int antennaShader = createShader("basic.vert", "basic.frag");
         unsigned int signatureShader = createShader("texture.vert", "texture.frag");
+        unsigned int scaleShader = createShader("basic.vert", "basic.frag");
+        unsigned int scaleValuesShader = createShader("basic.vert", "basic.frag");
 
-        unsigned int VAO[32];
-        unsigned int VBO[32];
-        glGenVertexArrays(32, VAO);
-        glGenBuffers(32, VBO);
+        unsigned int VAO[34];
+        unsigned int VBO[34];
+        glGenVertexArrays(34, VAO);
+        glGenBuffers(34, VBO);
         unsigned int stride;
 
 
@@ -348,6 +352,19 @@
             1.0,  1.0, 1.0, 1.0
         };
 
+        float scaleVertices[] =
+        {
+            -0.85, 0.075,
+            0.65, 0.075,
+            -0.85,  0.175,
+            0.65,  0.175
+        };
+
+        float scaleValuesVertices[134] =
+        {
+            -0.85, 0.125,
+            0.65, 0.125
+        };
 
         //Povezivanje podataka sa VAO i VBO
 
@@ -695,7 +712,44 @@
         unsigned uTexLoc4 = glGetUniformLocation(signatureShader, "uTex");
         glUniform1i(uTexLoc4, 0);
 
+        // Skala
+        stride = 2 * sizeof(float);
+        glBindVertexArray(VAO[31]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[31]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(scaleVertices), scaleVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
 
+        // Vrednosti skale
+        float position = 0.8;
+        for (int i = 1; i <= 29; i++) {
+            scaleValuesVertices[4 * i] = -0.8 + (i - 1) * 0.05;
+            scaleValuesVertices[4 * i + 1] = 0.1375;
+            scaleValuesVertices[4 * i + 2] = -0.8 + (i - 1) * 0.05;
+            scaleValuesVertices[4 * i + 3] = 0.1125;
+        }
+        scaleValuesVertices[120] = -0.80;
+        scaleValuesVertices[121] = 0.075;
+        scaleValuesVertices[122] = -0.80;
+        scaleValuesVertices[123] = 0.1625;
+        scaleValuesVertices[124] = -0.85;
+        scaleValuesVertices[125] = 0.075;
+        scaleValuesVertices[126] = 0.65;
+        scaleValuesVertices[127] = 0.075;
+        scaleValuesVertices[128] = 0.65;
+        scaleValuesVertices[129] = 0.175;
+        scaleValuesVertices[130] = -0.85;
+        scaleValuesVertices[131] = 0.175;
+        scaleValuesVertices[132] = -0.85;
+        scaleValuesVertices[133] = 0.075;
+        stride = 2 * sizeof(float);
+        glBindVertexArray(VAO[32]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[32]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(scaleValuesVertices), scaleValuesVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glfwSetScrollCallback(window, scrollCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         glfwSetCursorPosCallback(window, cursorPositionCallback);
         double previousTime = glfwGetTime();
@@ -1041,6 +1095,60 @@
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glBindTexture(GL_TEXTURE_2D, 0);
 
+            // Skala
+            glUseProgram(scaleShader);
+            glUniform3f(glGetUniformLocation(scaleShader, "color"), 1.0f, 1.0f, 1.0f);
+            glBindVertexArray(VAO[31]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Vrednosti skale
+            glUseProgram(scaleValuesShader);
+            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 0.0f, 0.0f, 0.0f);
+            glBindVertexArray(VAO[32]);
+            glLineWidth(3.0f);
+            glDrawArrays(GL_LINES, 0, 2);
+            glLineWidth(2.0f);
+            glDrawArrays(GL_LINES, 2, 2);
+            glDrawArrays(GL_LINES, 4, 2);
+            glDrawArrays(GL_LINES, 6, 2);
+            glDrawArrays(GL_LINES, 8, 2);
+            glDrawArrays(GL_LINES, 10, 2);
+            glDrawArrays(GL_LINES, 12, 2);
+            glDrawArrays(GL_LINES, 14, 2);
+            glDrawArrays(GL_LINES, 16, 2);
+            glDrawArrays(GL_LINES, 18, 2);
+            glDrawArrays(GL_LINES, 20, 2);
+            glDrawArrays(GL_LINES, 22, 2);
+            glDrawArrays(GL_LINES, 24, 2);
+            glDrawArrays(GL_LINES, 26, 2);
+            glDrawArrays(GL_LINES, 28, 2);
+            glDrawArrays(GL_LINES, 30, 2);
+            glDrawArrays(GL_LINES, 32, 2);
+            glDrawArrays(GL_LINES, 34, 2);
+            glDrawArrays(GL_LINES, 36, 2);
+            glDrawArrays(GL_LINES, 38, 2);
+            glDrawArrays(GL_LINES, 40, 2);
+            glDrawArrays(GL_LINES, 42, 2);
+            glDrawArrays(GL_LINES, 44, 2);
+            glDrawArrays(GL_LINES, 46, 2);
+            glDrawArrays(GL_LINES, 48, 2);
+            glDrawArrays(GL_LINES, 50, 2);
+            glDrawArrays(GL_LINES, 52, 2);
+            glDrawArrays(GL_LINES, 54, 2);
+            glDrawArrays(GL_LINES, 56, 2);
+            glDrawArrays(GL_LINES, 58, 2);
+            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 1.0f, 0.0f, 0.0f);
+            glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), scaleIndicatorOffset, 0.0f); // Pomeraj kazaljke
+            glLineWidth(3.0f);
+            glDrawArrays(GL_LINES, 60, 2);
+            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), 0.0f, 0.0f);
+            glLineWidth(1.0f);
+            glDrawArrays(GL_LINES, 62, 2);
+            glDrawArrays(GL_LINES, 63, 2);
+            glDrawArrays(GL_LINES, 64, 2);
+            glDrawArrays(GL_LINES, 65, 2);
+
 
             glfwSwapBuffers(window);
         }
@@ -1212,6 +1320,24 @@
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(progressBarFillVertices), progressBarFillVertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+
+    void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+        // yOffset nam govori da li je točkić pomeren napred (pozitivno) ili nazad (negativno)
+        scaleIndicatorOffset += 0.01f * static_cast<float>(yOffset);
+
+        // Ograničavamo kazaljku na ivice skale
+        if (scaleIndicatorOffset < -0.05f) { // Leva ivica
+            scaleIndicatorOffset = -0.05f;
+        }
+        else if (scaleIndicatorOffset > 1.44f) { // Desna ivica
+            scaleIndicatorOffset = 1.44f;
+        }
+
+
+
+        std::cout << "Scale indicator offset: " << scaleIndicatorOffset << std::endl;
+    }
+
 
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
         if (action == GLFW_RELEASE) return;
