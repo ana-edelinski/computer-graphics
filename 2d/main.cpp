@@ -1185,9 +1185,9 @@
             glDrawArrays(GL_LINES, 54, 2);
             glDrawArrays(GL_LINES, 56, 2);
             glDrawArrays(GL_LINES, 58, 2);
-            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 1.0f, 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 1.0f, 0.5f, 0.0f);
             glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), scaleIndicatorOffset, 0.0f); // Pomeraj kazaljke
-            glLineWidth(3.0f);
+            glLineWidth(3.6f);
             glDrawArrays(GL_LINES, 60, 2);
             glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 0.0f, 0.0f, 0.0f);
             glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), 0.0f, 0.0f);
@@ -1390,8 +1390,8 @@
         scaleIndicatorOffset += 0.01f * static_cast<float>(yOffset);
 
         // Ograničavamo kazaljku na ivice skale
-        if (scaleIndicatorOffset < -0.05f) { // Leva ivica
-            scaleIndicatorOffset = -0.05f;
+        if (scaleIndicatorOffset < -0.04f) { // Leva ivica
+            scaleIndicatorOffset = -0.04f;
         }
         else if (scaleIndicatorOffset > 1.44f) { // Desna ivica
             scaleIndicatorOffset = 1.44f;
