@@ -192,11 +192,12 @@
 
 
         float radioBodyVertices[] = {
-            -0.9, -0.7,  
-             0.9, -0.7,  
-            -0.9,  0.3,  
-             0.9,  0.3  
+            -0.9, -0.7,  // donja leva tačka
+             0.9, -0.7,  // donja desna tačka
+            -0.9,  0.2,  // gornja leva tačka (smanjeno sa 0.3)
+             0.9,  0.2   // gornja desna tačka (smanjeno sa 0.3)
         };
+
 
         float rightSpeakerVertices[] = {
             0.25, -0.65,  
@@ -248,8 +249,8 @@
         float verticesRadioButtonIndicatorLine[] =
         {
             // X      Y
-            0.8, 0.125,
-            0.8, 0.165
+            0.8, 0.025,
+            0.8, 0.065
         };
 
         float sliderBarVertices[] = {
@@ -325,15 +326,15 @@
 
 
         float antennaBaseVertices[] = {
-            -0.85f, 0.3f,  // Donji levi ugao osnove antene
-            -0.80f, 0.3f,  // Donji desni ugao osnove antene
+            -0.85f, 0.2f,  // Donji levi ugao osnove antene
+            -0.80f, 0.2f,  // Donji desni ugao osnove antene
             -0.85f, 0.35f, // Gornji levi ugao osnove antene
             -0.80f, 0.35f  // Gornji desni ugao osnove antene
         };
 
         float antennaVertices[] = {
-            -0.8375f, 0.35f, // Donji levi ugao štapa antene
-            -0.8125f, 0.35f, // Donji desni ugao štapa antene
+            -0.8375f, 0.25f, // Donji levi ugao štapa antene
+            -0.8125f, 0.25f, // Donji desni ugao štapa antene
             -0.8375f, 0.9f,  // Gornji levi ugao štapa antene
             -0.8125f, 0.9f   // Gornji desni ugao štapa antene
         };
@@ -368,27 +369,27 @@
         };
 
         float handleHolderLeft[] = {
-            -0.70f, 0.3f,  // Donji levi ugao
-            -0.65f, 0.3f,  // Donji desni ugao
-            -0.70f, 0.5f,  // Gornji levi ugao
-            -0.65f, 0.5f   // Gornji desni ugao
+            -0.70f, 0.2f,  // Donji levi ugao
+            -0.65f, 0.2f,  // Donji desni ugao
+            -0.70f, 0.4f,  // Gornji levi ugao
+            -0.65f, 0.4f   // Gornji desni ugao
         };
 
 
         float handleHolderRight[] = {
-            0.65f, 0.3f,   // Donji levi ugao
-            0.70f, 0.3f,   // Donji desni ugao
-            0.65f, 0.5f,   // Gornji levi ugao
-            0.70f, 0.5f    // Gornji desni ugao
+            0.65f, 0.2f,   // Donji levi ugao
+            0.70f, 0.2f,   // Donji desni ugao
+            0.65f, 0.4f,   // Gornji levi ugao
+            0.70f, 0.4f    // Gornji desni ugao
         };
 
 
 
         float handleBar[] = {
-            -0.65f, 0.45f,  // Levi donji ugao
-            0.65f, 0.45f,   // Desni donji ugao
-            -0.65f, 0.55f,  // Levi gornji ugao
-            0.65f, 0.55f    // Desni gornji ugao
+            -0.65f, 0.35f,  // Levi donji ugao
+            0.65f, 0.35f,   // Desni donji ugao
+            -0.65f, 0.45f,  // Levi gornji ugao
+            0.65f, 0.45f    // Desni gornji ugao
         };
 
 
@@ -492,7 +493,7 @@
         float radioOnOffButton[CRES * 2 + 4];
         float r = 0.05;
         radioOnOffButton[0] = 0.8;
-        radioOnOffButton[1] = 0.125;
+        radioOnOffButton[1] = 0.025;
         for (int i = 0; i <= CRES; i++)
         {
 
@@ -509,7 +510,7 @@
         float radioOnOffButtonIndicator[CRES * 2 + 4];
         r = 0.04;
         radioOnOffButtonIndicator[0] = 0.8;
-        radioOnOffButtonIndicator[1] = 0.125;
+        radioOnOffButtonIndicator[1] = 0.025;
         for (int i = 0; i <= CRES; i++)
         {
             radioOnOffButtonIndicator[2 + 2 * i] = radioOnOffButtonIndicator[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
@@ -525,7 +526,7 @@
         float radioOnOffButtonIndicatorInner[CRES * 2 + 4];
         r = 0.035;
         radioOnOffButtonIndicatorInner[0] = 0.8;
-        radioOnOffButtonIndicatorInner[1] = 0.125;
+        radioOnOffButtonIndicatorInner[1] = 0.025;
         for (int i = 0; i <= CRES; i++)
         {
             radioOnOffButtonIndicatorInner[2 + 2 * i] = radioOnOffButtonIndicatorInner[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
@@ -549,7 +550,7 @@
         float radioOnOffLamp[CRES * 2 + 4];
         r = 0.02;
         radioOnOffLamp[0] = 0.725;
-        radioOnOffLamp[1] = 0.125;
+        radioOnOffLamp[1] = 0.025;
         for (int i = 0; i <= CRES; i++)
         {
             radioOnOffLamp[2 + 2 * i] = radioOnOffLamp[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
@@ -565,7 +566,7 @@
         float radioOnOffLampLight[CRES * 2 + 4];
         r = 0.01;
         radioOnOffLampLight[0] = 0.725;
-        radioOnOffLampLight[1] = 0.125;
+        radioOnOffLampLight[1] = 0.025;
         for (int i = 0; i <= CRES; i++)
         {
             radioOnOffLampLight[2 + 2 * i] = radioOnOffLampLight[0] + r * cos((3.141592 / 180) * (i * 360 / CRES));
