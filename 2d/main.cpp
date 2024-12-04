@@ -24,9 +24,9 @@
     float progressBarY = -0.25f; // Y koordinata (ispod slidera)
     float progressBarFill = 0.0f; // Popunjenost (od 0.0f do 1.0f)
     float lastProgressBarFill = 0.0f; // Memorisana popunjenost progress bara
-    float displayY = -0.35f; // Y koordinata displeja
+    float displayY = -0.37f; // Pomeramo displej naniže
     float displayWidth = 0.4f; // Širina displeja (ista kao progress bar)
-    float displayHeight = 0.1f; // Visina displeja
+    float displayHeight = 0.15f; // Visina displeja
     bool FMon = true;
     float antennaOffset = -0.55f; // Antena je uvučena na početku
     float scaleIndicatorOffset = 0.0f;
@@ -273,55 +273,56 @@
 
         float displayVertices[] = {
             -displayWidth / 2, displayY - displayHeight / 2, // Levo dole
-             displayWidth / 2, displayY - displayHeight / 2, // Desno dole
+            displayWidth / 2, displayY - displayHeight / 2, // Desno dole
             -displayWidth / 2, displayY + displayHeight / 2, // Levo gore
-             displayWidth / 2, displayY + displayHeight / 2  // Desno gore
+            displayWidth / 2, displayY + displayHeight / 2  // Desno gore
         };
 
         float AMFMRailVertices[] = {
-            -0.1f, -0.53f, 
-             0.1f, -0.53f, 
-            -0.1f, -0.43f, 
-             0.1f, -0.43f  
+            -0.1f, -0.58f, // Novi Y koordinati
+             0.1f, -0.58f,
+            -0.1f, -0.48f,
+             0.1f, -0.48f
         };
 
         float AMFMSwitchVertices[] = {
-            -0.05f, -0.53f,   
-             0.05f, -0.53f,   
-            -0.05f, -0.43f,   
-             0.05f, -0.43f    
+            -0.05f, -0.58f,
+             0.05f, -0.58f,
+            -0.05f, -0.48f,
+             0.05f, -0.48f
         };
 
         float AMVertices[] = {
-            -displayWidth / 2, -0.53f, 0.0, 0.0,  // Levo dole
-            -displayWidth / 4, -0.53f, 1.0, 0.0,  // Desno dole
-            -displayWidth / 2, -0.43f, 0.0, 1.0,  // Levo gore
-            -displayWidth / 4, -0.43f, 1.0, 1.0   // Desno gore
+            -displayWidth / 2, -0.58f, 0.0, 0.0,  // Novi Y koordinati
+            -displayWidth / 4, -0.58f, 1.0, 0.0,
+            -displayWidth / 2, -0.48f, 0.0, 1.0,
+            -displayWidth / 4, -0.48f, 1.0, 1.0
         };
 
         float FMVertices[] = {
-             displayWidth / 4, -0.53f, 0.0, 0.0,  // Levo dole
-             displayWidth / 2, -0.53f, 1.0, 0.0,  // Desno dole
-             displayWidth / 4, -0.43f, 0.0, 1.0,  // Levo gore
-             displayWidth / 2, -0.43f, 1.0, 1.0   // Desno gore
+             displayWidth / 4, -0.58f, 0.0, 0.0,  // Novi Y koordinati
+             displayWidth / 2, -0.58f, 1.0, 0.0,
+             displayWidth / 4, -0.48f, 0.0, 1.0,
+             displayWidth / 2, -0.48f, 1.0, 1.0
         };
 
 
         float AMFMRailOutlineVertices[] = {
-            -displayWidth / 4, -0.53f,
-             displayWidth / 4, -0.53f,
-             displayWidth / 4, -0.43f,
-            -displayWidth / 4, -0.43f,
-            -displayWidth / 4, -0.53f
+            -displayWidth / 4, -0.58f, // Leva donja tačka
+             displayWidth / 4, -0.58f, // Desna donja tačka
+             displayWidth / 4, -0.48f, // Desna gornja tačka
+            -displayWidth / 4, -0.48f, // Leva gornja tačka
+            -displayWidth / 4, -0.58f  // Vraćamo se na prvu tačku da zatvorimo outline
         };
 
         float AMFMSwitchOutlineVertices[] = {
-            -0.05, -0.53f,
-             0.05, -0.53f,
-             0.05, -0.43f,
-            -0.05, -0.43f,
-            -0.05, -0.53f
+            -0.05f, -0.58f, // Leva donja tačka
+             0.05f, -0.58f, // Desna donja tačka
+             0.05f, -0.48f, // Desna gornja tačka
+            -0.05f, -0.48f, // Leva gornja tačka
+            -0.05f, -0.58f  // Vraćamo se na prvu tačku da zatvorimo outline
         };
+
 
         float antennaBaseVertices[] = {
             -0.85f, 0.3f,  // Donji levi ugao osnove antene
