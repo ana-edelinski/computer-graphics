@@ -56,7 +56,7 @@
 
                 // Definišemo centar i radijus dugmeta u normalizovanim koordinatama - provera za ON/OFF button
                 const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
-                const float buttonCenterY = 0.125f; // Y koordinata centra dugmeta
+                const float buttonCenterY = 0.025f; // Y koordinata centra dugmeta
                 const float buttonRadius = 0.05f; // Poluprečnik dugmeta
 
                 // Proveravamo da li je klik unutar radijusa dugmeta
