@@ -184,10 +184,10 @@
         unsigned int scaleShader = createShader("basic.vert", "basic.frag");
         unsigned int scaleValuesShader = createShader("basic.vert", "basic.frag");
 
-        unsigned int VAO[34];
-        unsigned int VBO[34];
-        glGenVertexArrays(34, VAO);
-        glGenBuffers(34, VBO);
+        unsigned int VAO[36];
+        unsigned int VBO[36];
+        glGenVertexArrays(36, VAO);
+        glGenBuffers(36, VBO);
         unsigned int stride;
 
 
@@ -365,6 +365,32 @@
             -0.85, 0.125,
             0.65, 0.125
         };
+
+        float handleHolderLeft[] = {
+            -0.70f, 0.3f,  // Donji levi ugao
+            -0.65f, 0.3f,  // Donji desni ugao
+            -0.70f, 0.5f,  // Gornji levi ugao
+            -0.65f, 0.5f   // Gornji desni ugao
+        };
+
+
+        float handleHolderRight[] = {
+            0.65f, 0.3f,   // Donji levi ugao
+            0.70f, 0.3f,   // Donji desni ugao
+            0.65f, 0.5f,   // Gornji levi ugao
+            0.70f, 0.5f    // Gornji desni ugao
+        };
+
+
+
+        float handleBar[] = {
+            -0.65f, 0.45f,  // Levi donji ugao
+            0.65f, 0.45f,   // Desni donji ugao
+            -0.65f, 0.55f,  // Levi gornji ugao
+            0.65f, 0.55f    // Desni gornji ugao
+        };
+
+
 
         //Povezivanje podataka sa VAO i VBO
 
@@ -748,6 +774,28 @@
         glBufferData(GL_ARRAY_BUFFER, sizeof(scaleValuesVertices), scaleValuesVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
+
+        // Leva strana nosača ručke
+        glBindVertexArray(VAO[33]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[33]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(handleHolderLeft), handleHolderLeft, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // Desna strana nosača ručke
+        glBindVertexArray(VAO[34]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[34]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(handleHolderRight), handleHolderRight, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // Sama ručka
+        glBindVertexArray(VAO[35]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[35]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(handleBar), handleBar, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
 
         glfwSetScrollCallback(window, scrollCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -1149,6 +1197,22 @@
             glDrawArrays(GL_LINES, 64, 2);
             glDrawArrays(GL_LINES, 65, 2);
 
+            // Renderovanje leve strane nosača ručke
+            glUseProgram(radioBodyShader);  // Koristi shader za telo radija
+            glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.6f, 0.6f, 0.6f); // Siva boja
+            glBindVertexArray(VAO[33]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Renderovanje desne strane nosača ručke
+            glBindVertexArray(VAO[34]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Renderovanje horizontalne ručke
+            glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.2f, 0.2f, 0.2f); // Tamnija boja
+            glBindVertexArray(VAO[35]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
 
             glfwSwapBuffers(window);
         }
@@ -1158,8 +1222,8 @@
         // Brisanje resursa
         glDeleteTextures(1, &meshTexture);
 
-        glDeleteBuffers(32, VBO);
-        glDeleteVertexArrays(32, VAO);
+        glDeleteBuffers(36, VBO);
+        glDeleteVertexArrays(36, VAO);
 
         // Brisanje shader programa
         glDeleteProgram(radioBodyShader);
