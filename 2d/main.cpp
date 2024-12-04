@@ -354,13 +354,13 @@
             1.0,  1.0, 1.0, 1.0
         };
 
-        float scaleVertices[] =
-        {
-            -0.85, 0.075,
-            0.65, 0.075,
-            -0.85,  0.175,
-            0.65,  0.175
+        float scaleVertices[] = {
+            -0.85, -0.025, // 0.075 - 0.1
+            0.65, -0.025,  // 0.075 - 0.1
+            -0.85, 0.075,  // 0.175 - 0.1
+            0.65, 0.075    // 0.175 - 0.1
         };
+
 
         float scaleValuesVertices[134] =
         {
@@ -770,6 +770,14 @@
         scaleValuesVertices[131] = 0.175;
         scaleValuesVertices[132] = -0.85;
         scaleValuesVertices[133] = 0.075;
+
+        // Pomeranje po Y osi
+        float adjustmentY = -0.1f; // Spuštanje za 0.1 po Y osi
+        for (int i = 1; i < sizeof(scaleValuesVertices) / sizeof(float); i += 2) {
+            scaleValuesVertices[i] += adjustmentY;
+        }
+
+
         stride = 2 * sizeof(float);
         glBindVertexArray(VAO[32]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[32]);
