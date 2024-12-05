@@ -183,11 +183,12 @@
         unsigned int signatureShader = createShader("texture.vert", "texture.frag");
         unsigned int scaleShader = createShader("basic.vert", "basic.frag");
         unsigned int scaleValuesShader = createShader("basic.vert", "basic.frag");
+        unsigned int backgroundShader = createShader("background.vert", "background.frag");
 
-        unsigned int VAO[36];
-        unsigned int VBO[36];
-        glGenVertexArrays(36, VAO);
-        glGenBuffers(36, VBO);
+        unsigned int VAO[37];
+        unsigned int VBO[37];
+        glGenVertexArrays(37, VAO);
+        glGenBuffers(37, VBO);
         unsigned int stride;
 
 
@@ -386,10 +387,17 @@
 
 
         float handleBar[] = {
-            -0.65f, 0.35f,  // Levi donji ugao
+           -0.65f, 0.35f,  // Levi donji ugao
             0.65f, 0.35f,   // Desni donji ugao
-            -0.65f, 0.45f,  // Levi gornji ugao
+           -0.65f, 0.45f,  // Levi gornji ugao
             0.65f, 0.45f    // Desni gornji ugao
+        };
+
+        float backgroundVertices[] = {
+            -1.0f, -1.0f, 0.0f, 0.0f,  // Donji levi ugao
+             1.0f, -1.0f, 1.0f, 0.0f,  // Donji desni ugao
+            -1.0f,  1.0f, 0.0f, 1.0f,  // Gornji levi ugao
+             1.0f,  1.0f, 1.0f, 1.0f   // Gornji desni ugao
         };
 
 
@@ -806,6 +814,26 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
+        // Background
+        unsigned int backgroundTexture = loadImageToTexture("resources/background.png");
+        if (backgroundTexture == 0) {
+            std::cout << "Greska pri ucitavanju teksture pozadine!" << std::endl;
+            return 4;
+        }
+        glBindVertexArray(VAO[36]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[36]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(backgroundVertices), backgroundVertices, GL_STATIC_DRAW);
+
+        // Povezivanje atributa za poziciju
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // Povezivanje atributa za teksture
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+
 
         glfwSetScrollCallback(window, scrollCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -850,11 +878,20 @@
             speakerMembraneScaleRight = oscillation;
 
 
-            // Brisanje ekrana
-            glClearColor(1.0, 1.0, 1.0, 1.0);   //bela pozadina
-            glClear(GL_COLOR_BUFFER_BIT);
-
             // [KOD ZA CRTANJE]
+
+            // Aktivirajte shader za pozadinu
+            glUseProgram(backgroundShader);
+
+            // Povežite teksturu pozadine
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+            glUniform1i(glGetUniformLocation(backgroundShader, "backgroundTexture"), 0);
+
+            // Renderujte kvadrat za pozadinu
+            glBindVertexArray(VAO[36]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            glBindVertexArray(0);
 
             // Antena
             glUseProgram(antennaShader);
@@ -1224,6 +1261,10 @@
 
 
 
+
+
+
+
             glfwSwapBuffers(window);
         }
 
@@ -1231,9 +1272,11 @@
 
         // Brisanje resursa
         glDeleteTextures(1, &meshTexture);
+        glDeleteTextures(1, &backgroundTexture);
+        //TODO: obrisati ostale teksture
 
-        glDeleteBuffers(36, VBO);
-        glDeleteVertexArrays(36, VAO);
+        glDeleteBuffers(37, VBO);
+        glDeleteVertexArrays(37, VAO);
 
         // Brisanje shader programa
         glDeleteProgram(radioBodyShader);
@@ -1245,6 +1288,7 @@
         glDeleteProgram(radioOnOffButtonIndicatorShader);
         glDeleteProgram(radioOnOffButtonIndicatorLineShader);
         glDeleteProgram(radioOnOffLampShader);
+        //TODO: obrisati ostale shadere
 
         // Terminate GLFW (Sve OK - batali program)
         glfwTerminate();

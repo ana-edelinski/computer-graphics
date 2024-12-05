@@ -144,6 +144,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="background.frag" />
+    <None Include="background.vert" />
     <None Include="basic.frag" />
     <None Include="basic.vert" />
     <None Include="line.frag" />
