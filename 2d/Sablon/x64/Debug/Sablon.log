@@ -99,6 +99,7 @@ D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1000,78): warning C
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1006,79): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1013,78): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1062,32): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1553,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1558,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1215,35): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1563,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1568,72): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Sablon.vcxproj -> D:\Fakultet\7\grafika\projekat\computer-graphics\2d\x64\Debug\Sablon.exe

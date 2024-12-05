@@ -1174,16 +1174,19 @@
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Detekcija aktivne stanice
-            unsigned int activeStationTexture = 0; // Nijedna stanica nije aktivna po defaultu
-            for (const auto& station : stations) {
-                if (scaleIndicatorOffset >= station.startFrequency && scaleIndicatorOffset <= station.endFrequency) {
-                    activeStationTexture = station.texture; // Nađi aktivnu stanicu
-                    break;
+            activeStationTexture = 0; // Nijedna stanica nije aktivna po defaultu
+            if (radioOn && antennaOffset > -0.5f) { // Samo ako je radio uključen i antena podignuta
+                for (const auto& station : stations) {
+                    if (scaleIndicatorOffset >= station.startFrequency && scaleIndicatorOffset <= station.endFrequency) {
+                        activeStationTexture = station.texture; // Nađi aktivnu stanicu
+                        break;
+                    }
                 }
             }
 
-            // Prikaz aktivne stanice na displeju (ako postoji)
-            if (radioOn && activeStationTexture != 0) {
+            // Animacija zvučnika samo ako je antena izvučena
+            if (radioOn && activeStationTexture != 0 && sliderPosition > -0.2f && antennaOffset > -0.5f) {
+
                 textureOffset += scrollSpeed; // Pomeri offset ulevo
                 if (textureOffset <= -1.0f) {
                     textureOffset += 1.0f; // Resetuje kada pređe granicu
@@ -1204,14 +1207,21 @@
                 glBindVertexArray(VAO[20]); // Koristimo isti VAO za displej
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-                // Deaktiviraj teksturu
-                glBindTexture(GL_TEXTURE_2D, 0);
-                glBindVertexArray(0);
+                volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
+                membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
+                double time = glfwGetTime();
+
+                // Sinhronizovane oscilacije zvučnika
+                float oscillation = 1.0f + membraneAmplitude * sin(time * 20.0f);
+                speakerMembraneScaleLeft = oscillation;
+                speakerMembraneScaleRight = oscillation;
             }
             else {
-                // Ako nema aktivne stanice, ne prikazuj ništa
-                std::cout << "Nijedna stanica nije aktivna." << std::endl;
+                // Resetovanje skale kada je radio isključen, antena sklopljena, ili slider skroz levo
+                speakerMembraneScaleLeft = 1.0f;
+                speakerMembraneScaleRight = 1.0f;
             }
+
 
 
 
