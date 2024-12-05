@@ -127,6 +127,7 @@
         float startFrequency;  // Početak opsega
         float endFrequency;    // Kraj opsega
         unsigned int texture;  // Tekstura stanice
+        bool isFM;             // Da li je stanica u FM opsegu
     };
 
 
@@ -174,14 +175,14 @@
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // stanice
         std::vector<RadioStation> stations = {
-            {-0.04f, 0.1f, loadImageToTexture("resources/radio1.png")},
-            {0.1f, 0.3f, loadImageToTexture("resources/radio2.png")},
-            {0.3f, 0.6f, loadImageToTexture("resources/radio3.png")},
-            {0.6f, 0.9f, loadImageToTexture("resources/radio4.png")},
-            {0.9f, 1.15f, loadImageToTexture("resources/radio5.png")}
-            };
+            {-0.04f, 0.1f, loadImageToTexture("resources/radio1.png"), true}, // FM stanica
+            {0.1f, 0.3f, loadImageToTexture("resources/radio2.png"), false}, // AM stanica
+            {0.3f, 0.6f, loadImageToTexture("resources/radio3.png"), true}, // FM stanica
+            {0.6f, 0.9f, loadImageToTexture("resources/radio4.png"), false}, // AM stanica
+            {0.9f, 1.15f, loadImageToTexture("resources/radio5.png"), true} // FM stanica
+        };
+
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1178,11 +1179,14 @@
             if (radioOn && antennaOffset > -0.5f) { // Samo ako je radio uključen i antena podignuta
                 for (const auto& station : stations) {
                     if (scaleIndicatorOffset >= station.startFrequency && scaleIndicatorOffset <= station.endFrequency) {
-                        activeStationTexture = station.texture; // Nađi aktivnu stanicu
-                        break;
+                        if ((FMon && station.isFM) || (!FMon && !station.isFM)) { // Provera režima
+                            activeStationTexture = station.texture; // Nađi aktivnu stanicu
+                            break;
+                        }
                     }
                 }
             }
+
 
             // Animacija zvučnika samo ako je antena izvučena
             if (radioOn && activeStationTexture != 0 && sliderPosition > -0.2f && antennaOffset > -0.5f) {
