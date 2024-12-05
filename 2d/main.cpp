@@ -31,6 +31,9 @@
     float antennaOffset = -0.55f; // Antena je uvučena na početku
     float scaleIndicatorOffset = 0.0f;
 
+    float textureOffset = 0.0f; // Initial offset
+    float scrollSpeed = 0.0006f; // Speed of scrolling
+
     unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
     unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
     static unsigned loadImageToTexture(const char* filePath);
@@ -161,6 +164,9 @@
             return 3;
         }
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
 
         unsigned int radioBodyShader = createShader("radiobody.vert", "radiobody.frag");
@@ -184,6 +190,7 @@
         unsigned int scaleShader = createShader("basic.vert", "basic.frag");
         unsigned int scaleValuesShader = createShader("basic.vert", "basic.frag");
         unsigned int backgroundShader = createShader("background.vert", "background.frag");
+        unsigned int scrollTextureShader = createShader("scroll.vert", "scroll.frag");
 
         unsigned int VAO[37];
         unsigned int VBO[37];
@@ -274,11 +281,13 @@
         };
 
         float displayVertices[] = {
-            -displayWidth / 2, displayY - displayHeight / 2, // Levo dole
-            displayWidth / 2, displayY - displayHeight / 2, // Desno dole
-            -displayWidth / 2, displayY + displayHeight / 2, // Levo gore
-            displayWidth / 2, displayY + displayHeight / 2  // Desno gore
+            //  Pozicija               Teksturne koordinate
+            -displayWidth / 2, displayY - displayHeight / 2,  0.0f, 0.0f, // Levo dole
+             displayWidth / 2, displayY - displayHeight / 2,  1.0f, 0.0f, // Desno dole
+            -displayWidth / 2, displayY + displayHeight / 2,  0.0f, 1.0f, // Levo gore
+             displayWidth / 2, displayY + displayHeight / 2,  1.0f, 1.0f  // Desno gore
         };
+
 
         float AMFMRailVertices[] = {
             -0.1f, -0.58f, // Novi Y koordinati
@@ -621,12 +630,24 @@
 
 
         // Displej
-        glBindVertexArray(VAO[20]); 
+        glBindVertexArray(VAO[20]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+        // Atribut za poziciju (layout(location = 0))
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
+
+        // Atribut za teksturne koordinate (layout(location = 1))
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
+        unsigned int overlayTexture = loadImageToTexture("resources/radio1.png");
+        if (overlayTexture == 0) {
+            std::cout << "Greska pri ucitavanju teksture radio1.png!" << std::endl;
+            return 4;
+        }
 
         // AM/FM Rail
         stride = 2 * sizeof(float);
@@ -1134,6 +1155,33 @@
             glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.0f, 0.0f, 0.0f); // Crna boja
             glBindVertexArray(VAO[20]); // Displej VAO
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Update texture offset
+            textureOffset += scrollSpeed;
+            if (textureOffset <= -1.0f) {
+                textureOffset += 1.0f; // Reset offset when texture loops
+            }
+
+            // Aktivirajte shader za teksturu
+            glUseProgram(scrollTextureShader);
+            glUniform1f(glGetUniformLocation(scrollTextureShader, "uOffset"), textureOffset);
+
+            // Postavite uniform za teksturu
+            textureUniform = glGetUniformLocation(scrollTextureShader, "uTex");
+            glUniform1i(textureUniform, 0);
+
+            // Aktivirajte teksturu
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, overlayTexture);
+
+            // Iscrtajte teksturu preko postojećeg displeja
+            glBindVertexArray(VAO[20]); // Koristimo isti VAO za displej
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Deaktivirajte teksturu
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindVertexArray(0);
+
 
             // AM/FM RAIL
             glUseProgram(AMFMRailShader);

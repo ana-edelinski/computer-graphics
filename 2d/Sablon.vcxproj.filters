@@ -60,7 +60,13 @@
     <None Include="basic.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="background.vert" />
-    <None Include="background.frag" />
+    <None Include="background.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="background.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="scroll.vert" />
+    <None Include="scroll.frag" />
   </ItemGroup>
 </Project>
