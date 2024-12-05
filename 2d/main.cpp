@@ -178,9 +178,9 @@
         std::vector<RadioStation> stations = {
             {-0.04f, 0.1f, loadImageToTexture("resources/radio1.png")},
             {0.1f, 0.3f, loadImageToTexture("resources/radio2.png")},
-           /* {0.3f, 0.6f, loadImageToTexture("resources/station3.png")},
-            {0.6f, 0.9f, loadImageToTexture("resources/station4.png")},
-            {0.9f, 1.44f, loadImageToTexture("resources/station5.png")}*/
+            {0.3f, 0.6f, loadImageToTexture("resources/radio3.png")},
+            {0.6f, 0.9f, loadImageToTexture("resources/radio4.png")},
+            {0.9f, 1.15f, loadImageToTexture("resources/radio5.png")}
             };
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
