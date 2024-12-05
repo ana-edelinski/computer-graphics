@@ -36,22 +36,10 @@
     <None Include="shared.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="speaker.frag">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="speaker.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
     <None Include="membrane.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
     <None Include="membrane.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="line.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="line.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
     <None Include="basic.vert">
@@ -66,7 +54,11 @@
     <None Include="background.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="scroll.vert" />
-    <None Include="scroll.frag" />
+    <None Include="scroll.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="scroll.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

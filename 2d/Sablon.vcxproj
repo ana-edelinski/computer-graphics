@@ -148,8 +148,6 @@
     <None Include="background.vert" />
     <None Include="basic.frag" />
     <None Include="basic.vert" />
-    <None Include="line.frag" />
-    <None Include="line.vert" />
     <None Include="membrane.frag" />
     <None Include="membrane.vert" />
     <None Include="packages.config" />
@@ -157,8 +155,6 @@
     <None Include="shared.vert" />
     <None Include="scroll.frag" />
     <None Include="scroll.vert" />
-    <None Include="speaker.frag" />
-    <None Include="speaker.vert" />
     <None Include="texture.frag" />
     <None Include="texture.vert" />
   </ItemGroup>
