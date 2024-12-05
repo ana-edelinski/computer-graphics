@@ -8,6 +8,7 @@
     #include <iostream>
     #include <fstream>
     #include <sstream>
+    #include <vector>
     #include <GL/glew.h>   //Omogucava upotrebu OpenGL naredbi
     #include <GLFW/glfw3.h> //Olaksava pravljenje i otvaranje prozora (konteksta) sa OpenGL sadrzajem
     #include "stb_image.h"
@@ -122,6 +123,12 @@
         }
     }
 
+    struct RadioStation {
+        float startFrequency;  // Početak opsega
+        float endFrequency;    // Kraj opsega
+        unsigned int texture;  // Tekstura stanice
+    };
+
 
     int main(void)
     {
@@ -167,6 +174,15 @@
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // stanice
+        std::vector<RadioStation> stations = {
+            {-0.04f, 0.1f, loadImageToTexture("resources/radio1.png")},
+            {0.1f, 0.3f, loadImageToTexture("resources/radio2.png")},
+           /* {0.3f, 0.6f, loadImageToTexture("resources/station3.png")},
+            {0.6f, 0.9f, loadImageToTexture("resources/station4.png")},
+            {0.9f, 1.44f, loadImageToTexture("resources/station5.png")}*/
+            };
+
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
 
         unsigned int radioBodyShader = createShader("radiobody.vert", "radiobody.frag");
@@ -198,6 +214,7 @@
         glGenBuffers(37, VBO);
         unsigned int stride;
 
+        unsigned int activeStationTexture = 0; // Globalna promenljiva unutar funkcije main
 
         float radioBodyVertices[] = {
             -0.9, -0.7,  // donja leva tačka
@@ -873,7 +890,7 @@
             // Animacija vibracija membrane (sinusoidni pokret) - samo ako je radio uključen i slider nije skroz levo
             float membraneAmplitude = 0.0f; // Podrazumevano nema vibracija
 
-            if (radioOn && sliderPosition > -0.2f) { // Provera da slider nije skroz levo (-0.2f je minimalna vrednost slider-a)
+            if (radioOn && activeStationTexture != 0 && sliderPosition > -0.2f) {
                 volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
                 membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
                 double time = glfwGetTime();
@@ -1156,31 +1173,47 @@
             glBindVertexArray(VAO[20]); // Displej VAO
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Update texture offset
-            textureOffset += scrollSpeed;
-            if (textureOffset <= -1.0f) {
-                textureOffset += 1.0f; // Reset offset when texture loops
+            // Detekcija aktivne stanice
+            unsigned int activeStationTexture = 0; // Nijedna stanica nije aktivna po defaultu
+            for (const auto& station : stations) {
+                if (scaleIndicatorOffset >= station.startFrequency && scaleIndicatorOffset <= station.endFrequency) {
+                    activeStationTexture = station.texture; // Nađi aktivnu stanicu
+                    break;
+                }
             }
 
-            // Aktivirajte shader za teksturu
-            glUseProgram(scrollTextureShader);
-            glUniform1f(glGetUniformLocation(scrollTextureShader, "uOffset"), textureOffset);
+            // Prikaz aktivne stanice na displeju (ako postoji)
+            if (radioOn && activeStationTexture != 0) {
+                textureOffset += scrollSpeed; // Pomeri offset ulevo
+                if (textureOffset <= -1.0f) {
+                    textureOffset += 1.0f; // Resetuje kada pređe granicu
+                }
 
-            // Postavite uniform za teksturu
-            textureUniform = glGetUniformLocation(scrollTextureShader, "uTex");
-            glUniform1i(textureUniform, 0);
+                glUseProgram(scrollTextureShader); // Shader za skrolujuću teksturu
+                glUniform1f(glGetUniformLocation(scrollTextureShader, "uOffset"), textureOffset);
 
-            // Aktivirajte teksturu
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, overlayTexture);
+                // Postavi uniform za teksturu
+                unsigned int textureUniform = glGetUniformLocation(scrollTextureShader, "uTex");
+                glUniform1i(textureUniform, 0);
 
-            // Iscrtajte teksturu preko postojećeg displeja
-            glBindVertexArray(VAO[20]); // Koristimo isti VAO za displej
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                // Aktiviraj teksturu
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, activeStationTexture);
 
-            // Deaktivirajte teksturu
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindVertexArray(0);
+                // Iscrtavanje teksture za aktivnu stanicu
+                glBindVertexArray(VAO[20]); // Koristimo isti VAO za displej
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+                // Deaktiviraj teksturu
+                glBindTexture(GL_TEXTURE_2D, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                // Ako nema aktivne stanice, ne prikazuj ništa
+                std::cout << "Nijedna stanica nije aktivna." << std::endl;
+            }
+
+
 
 
             // AM/FM RAIL
