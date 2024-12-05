@@ -153,8 +153,8 @@
     <None Include="membrane.frag" />
     <None Include="membrane.vert" />
     <None Include="packages.config" />
-    <None Include="radiobody.frag" />
-    <None Include="radiobody.vert" />
+    <None Include="shared.frag" />
+    <None Include="shared.vert" />
     <None Include="scroll.frag" />
     <None Include="scroll.vert" />
     <None Include="speaker.frag" />

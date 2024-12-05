@@ -30,10 +30,10 @@
     <None Include="texture.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="radiobody.frag">
+    <None Include="shared.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
-    <None Include="radiobody.vert">
+    <None Include="shared.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
     <None Include="speaker.frag">

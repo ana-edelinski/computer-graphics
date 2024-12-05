@@ -14,26 +14,25 @@
     #include "stb_image.h"
 
     bool radioOn = false;
-    float timeElapsed = 0.0f; // Proteklo vreme za animaciju lampice
+    float timeElapsed = 0.0f; //Proteklo vreme za animaciju lampice
     float volumeBarIndicatorOffset = 0.0f;
-    float sliderPosition = 0.0f; // Pozicija klizača u opsegu [-0.5, 0.5]
-    bool sliderDragging = false;    // Da li korisnik trenutno prevlači klizač
+    float sliderPosition = 0.0f; 
+    bool sliderDragging = false;    //Da li korisnik trenutno prevlaci slider
     float speakerMembraneScaleLeft = 1.0f;
     float speakerMembraneScaleRight = 1.0f;
-    float progressBarWidth = 0.4f; // Širina progress bara (iste širine kao slider)
-    float progressBarHeight = 0.02f; // Visina progress bara
-    float progressBarY = -0.25f; // Y koordinata (ispod slidera)
-    float progressBarFill = 0.0f; // Popunjenost (od 0.0f do 1.0f)
-    float lastProgressBarFill = 0.0f; // Memorisana popunjenost progress bara
-    float displayY = -0.37f; // Pomeramo displej naniže
-    float displayWidth = 0.4f; // Širina displeja (ista kao progress bar)
-    float displayHeight = 0.15f; // Visina displeja
-    bool FMon = true;
-    float antennaOffset = -0.55f; // Antena je uvučena na početku
+    float progressBarWidth = 0.4f;
+    float progressBarHeight = 0.02f; 
+    float progressBarY = -0.25f; 
+    float progressBarFill = 0.0f;
+    float lastProgressBarFill = 0.0f; 
+    float displayY = -0.37f; 
+    float displayWidth = 0.4f; 
+    float displayHeight = 0.15f; 
+    bool FMon = true;   //Da li je FM mode on
+    float antennaOffset = -0.55f; //Antena na pocetku uvucena
     float scaleIndicatorOffset = 0.0f;
-
-    float textureOffset = 0.0f; // Initial offset
-    float scrollSpeed = 0.0006f; // Speed of scrolling
+    float textureOffset = 0.0f; 
+    float scrollSpeed = 0.0006f; 
 
     unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
     unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
@@ -42,92 +41,14 @@
     void updateProgressBar(float sliderPosition, unsigned int VBO);
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
     void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
-
-    void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            if (action == GLFW_PRESS) {
-                // Dobijanje pozicije kursora u pikselima
-                double xPos, yPos;
-                glfwGetCursorPos(window, &xPos, &yPos);
-
-                // Dobijanje dimenzija prozora
-                int width, height;
-                glfwGetWindowSize(window, &width, &height);
-
-                // Konverzija koordinata u OpenGL normalizovani prostor [-1, 1]
-                float normX = 2.0f * (xPos / width) - 1.0f;
-                float normY = 1.0f - 2.0f * (yPos / height); // OpenGL ima obrnutu osu Y
-
-                // Definišemo centar i radijus dugmeta u normalizovanim koordinatama - provera za ON/OFF button
-                const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
-                const float buttonCenterY = 0.025f; // Y koordinata centra dugmeta
-                const float buttonRadius = 0.05f; // Poluprečnik dugmeta
-
-                // Proveravamo da li je klik unutar radijusa dugmeta
-                float dx = normX - buttonCenterX;
-                float dy = normY - buttonCenterY;
-
-                if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
-                    // Menjamo stanje radioOn (uključen/isključen)
-                    if (radioOn) {
-                        lastProgressBarFill = progressBarFill;
-                        progressBarFill = 0.0f;
-                    }
-                    else {
-                        progressBarFill = lastProgressBarFill;
-                    }
-                    radioOn = !radioOn;
-                    std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Uključeno" : "Isključeno") << std::endl;
-                    return;
-                }
-            
-                // Provera za slider (ograničavanje na područje slidera)
-                const float sliderRadius = 0.05f;
-                float sliderCenterX = sliderPosition;
-                float sliderCenterY = -0.2f;
-
-                dx = normX - sliderCenterX;
-                dy = normY - sliderCenterY;
-
-                if ((dx * dx + dy * dy) <= (sliderRadius * sliderRadius)) {
-                    sliderDragging = true;  // Aktivira prevlačenje klizača
-                    std::cout << "Slider dragging started" << std::endl;
-                    return;
-                }
-            }
-            else if (action == GLFW_RELEASE) {
-                if (sliderDragging) {
-                    // Prestanak prevlacenja slidera
-                    sliderDragging = false;
-                    std::cout << "Slider released at position: " << sliderPosition << std::endl;
-                }
-            }
-        }
-    }
-
-
-    void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
-        if (sliderDragging) {
-            int width, height;
-            glfwGetWindowSize(window, &width, &height);
-
-            float normX = 2.0f * (xPos / width) - 1.0f;
-
-            // Ograniči poziciju slidera
-            sliderPosition = fmaxf(-0.2f, fminf(0.2f, normX));
-
-            // Normalizacija sliderPosition za progress bar popunjenost
-            progressBarFill = (sliderPosition + 0.2f) / 0.4f; // Popunjenost od 0.0 do 1.0
-            lastProgressBarFill = progressBarFill;
-            std::cout << "Slider moved to position: " << sliderPosition << ", Progress bar fill: " << progressBarFill << std::endl;
-        }
-    }
+    void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+    void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos);
 
     struct RadioStation {
-        float startFrequency;  // Početak opsega
-        float endFrequency;    // Kraj opsega
-        unsigned int texture;  // Tekstura stanice
-        bool isFM;             // Da li je stanica u FM opsegu
+        float startFrequency;  
+        float endFrequency;   
+        unsigned int texture;  
+        bool isFM;            
     };
 
 
@@ -177,53 +98,37 @@
 
         std::vector<RadioStation> stations = {
             {-0.04f, 0.1f, loadImageToTexture("resources/radio1.png"), true}, // FM stanica
-            {0.1f, 0.3f, loadImageToTexture("resources/radio2.png"), false}, // AM stanica
-            {0.3f, 0.6f, loadImageToTexture("resources/radio3.png"), true}, // FM stanica
-            {0.6f, 0.9f, loadImageToTexture("resources/radio4.png"), false}, // AM stanica
+            {0.1f, 0.3f, loadImageToTexture("resources/radio2.png"), true}, // FM stanica
+            {0.3f, 0.6f, loadImageToTexture("resources/radio3.png"), false}, // AM stanica
+            {0.6f, 0.9f, loadImageToTexture("resources/radio4.png"), true}, // FM stanica
             {0.9f, 1.15f, loadImageToTexture("resources/radio5.png"), true} // FM stanica
         };
 
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROMJENLJIVE I BAFERI +++++++++++++++++++++++++++++++++++++++++++++++++
 
-        unsigned int radioBodyShader = createShader("radiobody.vert", "radiobody.frag");
-        unsigned int speakerShader = createShader("speaker.vert", "speaker.frag");
+        unsigned int sharedShader = createShader("shared.vert", "shared.frag");    
         unsigned int membraneShader = createShader("membrane.vert", "membrane.frag");
-        unsigned int lineShader = createShader("line.vert", "line.frag");
         unsigned int textureShader = createShader("texture.vert", "texture.frag");
-        unsigned int radioOnOffButtonShader = createShader("basic.vert", "basic.frag");
-        unsigned int radioOnOffButtonIndicatorShader = createShader("basic.vert", "basic.frag");
-        unsigned int radioOnOffButtonIndicatorLineShader = createShader("basic.vert", "basic.frag");
-        unsigned int radioOnOffLampShader = createShader("basic.vert", "basic.frag");
-        unsigned int AMFMRailShader = createShader("basic.vert", "basic.frag");
-        unsigned int AMFMRailOutlineShader = createShader("basic.vert", "basic.frag");
-        unsigned int AMFMSwitchShader = createShader("basic.vert", "basic.frag");
-        unsigned int AMFMSwitchOutlineShader = createShader("basic.vert", "basic.frag");
-        unsigned int AMShader = createShader("texture.vert", "texture.frag");
-        unsigned int FMShader = createShader("texture.vert", "texture.frag");
-        unsigned int antennaBaseShader = createShader("basic.vert", "basic.frag");
-        unsigned int antennaShader = createShader("basic.vert", "basic.frag");
-        unsigned int signatureShader = createShader("texture.vert", "texture.frag");
-        unsigned int scaleShader = createShader("basic.vert", "basic.frag");
-        unsigned int scaleValuesShader = createShader("basic.vert", "basic.frag");
         unsigned int backgroundShader = createShader("background.vert", "background.frag");
         unsigned int scrollTextureShader = createShader("scroll.vert", "scroll.frag");
+        unsigned int basicShader = createShader("basic.vert", "basic.frag");    
 
-        unsigned int VAO[37];
+
+        unsigned int VAO[37];  
         unsigned int VBO[37];
         glGenVertexArrays(37, VAO);
         glGenBuffers(37, VBO);
         unsigned int stride;
 
-        unsigned int activeStationTexture = 0; // Globalna promenljiva unutar funkcije main
+        unsigned int activeStationTexture = 0; 
 
         float radioBodyVertices[] = {
-            -0.9, -0.7,  // donja leva tačka
-             0.9, -0.7,  // donja desna tačka
-            -0.9,  0.2,  // gornja leva tačka (smanjeno sa 0.3)
-             0.9,  0.2   // gornja desna tačka (smanjeno sa 0.3)
+            -0.9, -0.7, 
+             0.9, -0.7,  
+            -0.9,  0.2, 
+             0.9,  0.2   
         };
-
 
         float rightSpeakerVertices[] = {
             0.25, -0.65,  
@@ -240,7 +145,6 @@
         };
 
         float rightSpeakerMeshVertices[] = {
-            // X    Y       S    T
              0.25, -0.65,  0.0, 0.0,
              0.75, -0.65,  1.0, 0.0,
              0.25, -0.15,  0.0, 1.0,
@@ -248,7 +152,6 @@
         };
 
         float leftSpeakerMeshVertices[] = {
-            // X    Y       S    T
             -0.75, -0.65,  0.0, 0.0,
             -0.25, -0.65,  1.0, 0.0,
             -0.75, -0.15,  0.0, 1.0,
@@ -274,7 +177,6 @@
 
         float verticesRadioButtonIndicatorLine[] =
         {
-            // X      Y
             0.8, 0.025,
             0.8, 0.065
         };
@@ -285,10 +187,10 @@
         };
 
         float progressBarVertices[] = {
-        -progressBarWidth / 2, progressBarY - progressBarHeight / 2,  // Levo dole
-         progressBarWidth / 2, progressBarY - progressBarHeight / 2,  // Desno dole
-        -progressBarWidth / 2, progressBarY + progressBarHeight / 2,  // Levo gore
-         progressBarWidth / 2, progressBarY + progressBarHeight / 2   // Desno gore
+        -progressBarWidth / 2, progressBarY - progressBarHeight / 2, 
+         progressBarWidth / 2, progressBarY - progressBarHeight / 2,  
+        -progressBarWidth / 2, progressBarY + progressBarHeight / 2,  
+         progressBarWidth / 2, progressBarY + progressBarHeight / 2  
         };
 
         float progressBarFillVertices[] = {
@@ -299,16 +201,15 @@
         };
 
         float displayVertices[] = {
-            //  Pozicija               Teksturne koordinate
-            -displayWidth / 2, displayY - displayHeight / 2,  0.0f, 0.0f, // Levo dole
-             displayWidth / 2, displayY - displayHeight / 2,  1.0f, 0.0f, // Desno dole
-            -displayWidth / 2, displayY + displayHeight / 2,  0.0f, 1.0f, // Levo gore
-             displayWidth / 2, displayY + displayHeight / 2,  1.0f, 1.0f  // Desno gore
+            -displayWidth / 2, displayY - displayHeight / 2,  0.0f, 0.0f, 
+             displayWidth / 2, displayY - displayHeight / 2,  1.0f, 0.0f, 
+            -displayWidth / 2, displayY + displayHeight / 2,  0.0f, 1.0f, 
+             displayWidth / 2, displayY + displayHeight / 2,  1.0f, 1.0f 
         };
 
 
         float AMFMRailVertices[] = {
-            -0.1f, -0.58f, // Novi Y koordinati
+            -0.1f, -0.58f, 
              0.1f, -0.58f,
             -0.1f, -0.48f,
              0.1f, -0.48f
@@ -322,14 +223,14 @@
         };
 
         float AMVertices[] = {
-            -displayWidth / 2, -0.58f, 0.0, 0.0,  // Novi Y koordinati
+            -displayWidth / 2, -0.58f, 0.0, 0.0,  
             -displayWidth / 4, -0.58f, 1.0, 0.0,
             -displayWidth / 2, -0.48f, 0.0, 1.0,
             -displayWidth / 4, -0.48f, 1.0, 1.0
         };
 
         float FMVertices[] = {
-             displayWidth / 4, -0.58f, 0.0, 0.0,  // Novi Y koordinati
+             displayWidth / 4, -0.58f, 0.0, 0.0, 
              displayWidth / 2, -0.58f, 1.0, 0.0,
              displayWidth / 4, -0.48f, 0.0, 1.0,
              displayWidth / 2, -0.48f, 1.0, 1.0
@@ -337,41 +238,41 @@
 
 
         float AMFMRailOutlineVertices[] = {
-            -displayWidth / 4, -0.58f, // Leva donja tačka
-             displayWidth / 4, -0.58f, // Desna donja tačka
-             displayWidth / 4, -0.48f, // Desna gornja tačka
-            -displayWidth / 4, -0.48f, // Leva gornja tačka
-            -displayWidth / 4, -0.58f  // Vraćamo se na prvu tačku da zatvorimo outline
+            -displayWidth / 4, -0.58f,
+             displayWidth / 4, -0.58f, 
+             displayWidth / 4, -0.48f, 
+            -displayWidth / 4, -0.48f, 
+            -displayWidth / 4, -0.58f 
         };
 
         float AMFMSwitchOutlineVertices[] = {
-            -0.05f, -0.58f, // Leva donja tačka
-             0.05f, -0.58f, // Desna donja tačka
-             0.05f, -0.48f, // Desna gornja tačka
-            -0.05f, -0.48f, // Leva gornja tačka
-            -0.05f, -0.58f  // Vraćamo se na prvu tačku da zatvorimo outline
+            -0.05f, -0.58f,
+             0.05f, -0.58f, 
+             0.05f, -0.48f, 
+            -0.05f, -0.48f, 
+            -0.05f, -0.58f  
         };
 
 
         float antennaBaseVertices[] = {
-            -0.85f, 0.2f,  // Donji levi ugao osnove antene
-            -0.80f, 0.2f,  // Donji desni ugao osnove antene
-            -0.85f, 0.35f, // Gornji levi ugao osnove antene
-            -0.80f, 0.35f  // Gornji desni ugao osnove antene
+            -0.85f, 0.2f,  
+            -0.80f, 0.2f,
+            -0.85f, 0.35f, 
+            -0.80f, 0.35f  
         };
 
         float antennaVertices[] = {
-            -0.8375f, 0.25f, // Donji levi ugao štapa antene
-            -0.8125f, 0.25f, // Donji desni ugao štapa antene
-            -0.8375f, 0.9f,  // Gornji levi ugao štapa antene
-            -0.8125f, 0.9f   // Gornji desni ugao štapa antene
+            -0.8375f, 0.25f, 
+            -0.8125f, 0.25f,
+            -0.8375f, 0.9f, 
+            -0.8125f, 0.9f   
         };
 
         float antennaTipVertices[] = {
-            -0.85f, 0.9f,  // Donji levi ugao vrha antene
-            -0.80f, 0.9f,  // Donji desni ugao vrha antene
-            -0.85f, 0.95f, // Gornji levi ugao vrha antene
-            -0.80f, 0.95f  // Gornji desni ugao vrha antene
+            -0.85f, 0.9f,  
+            -0.80f, 0.9f, 
+            -0.85f, 0.95f, 
+            -0.80f, 0.95f  
         };
 
         float signatureVertices[] =
@@ -383,12 +284,11 @@
         };
 
         float scaleVertices[] = {
-            -0.85, -0.025, // 0.075 - 0.1
-            0.65, -0.025,  // 0.075 - 0.1
-            -0.85, 0.075,  // 0.175 - 0.1
-            0.65, 0.075    // 0.175 - 0.1
+            -0.85, -0.025, 
+             0.65, -0.025,  
+            -0.85, 0.075,  
+             0.65, 0.075   
         };
-
 
         float scaleValuesVertices[134] =
         {
@@ -397,34 +297,31 @@
         };
 
         float handleHolderLeft[] = {
-            -0.70f, 0.2f,  // Donji levi ugao
-            -0.65f, 0.2f,  // Donji desni ugao
-            -0.70f, 0.4f,  // Gornji levi ugao
-            -0.65f, 0.4f   // Gornji desni ugao
+            -0.70f, 0.2f, 
+            -0.65f, 0.2f,  
+            -0.70f, 0.4f, 
+            -0.65f, 0.4f   
         };
-
 
         float handleHolderRight[] = {
-            0.65f, 0.2f,   // Donji levi ugao
-            0.70f, 0.2f,   // Donji desni ugao
-            0.65f, 0.4f,   // Gornji levi ugao
-            0.70f, 0.4f    // Gornji desni ugao
+            0.65f, 0.2f,   
+            0.70f, 0.2f,  
+            0.65f, 0.4f,  
+            0.70f, 0.4f    
         };
 
-
-
         float handleBar[] = {
-           -0.65f, 0.35f,  // Levi donji ugao
-            0.65f, 0.35f,   // Desni donji ugao
-           -0.65f, 0.45f,  // Levi gornji ugao
-            0.65f, 0.45f    // Desni gornji ugao
+           -0.65f, 0.35f,  
+            0.65f, 0.35f,  
+           -0.65f, 0.45f,  
+            0.65f, 0.45f   
         };
 
         float backgroundVertices[] = {
-            -1.0f, -1.0f, 0.0f, 0.0f,  // Donji levi ugao
-             1.0f, -1.0f, 1.0f, 0.0f,  // Donji desni ugao
-            -1.0f,  1.0f, 0.0f, 1.0f,  // Gornji levi ugao
-             1.0f,  1.0f, 1.0f, 1.0f   // Gornji desni ugao
+            -1.0f, -1.0f, 0.0f, 0.0f,  
+             1.0f, -1.0f, 1.0f, 0.0f,  
+            -1.0f,  1.0f, 0.0f, 1.0f,  
+             1.0f,  1.0f, 1.0f, 1.0f   
         };
 
 
@@ -439,7 +336,7 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-        // Levi zvučnik
+        // Levi zvucnik
         glBindVertexArray(VAO[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerVertices), leftSpeakerVertices, GL_STATIC_DRAW);
@@ -447,7 +344,7 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-        // Desni zvučnik
+        // Desni zvucnik
         glBindVertexArray(VAO[2]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(rightSpeakerVertices), rightSpeakerVertices, GL_STATIC_DRAW);
@@ -455,7 +352,7 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-        // *** Učitavanje teksture ***
+        // *** Ucitavanje teksture ***
         unsigned int meshTexture = loadImageToTexture("resources/mesh.png");
         if (meshTexture == 0) {
             std::cout << "Greska pri ucitavanju teksture!" << std::endl;
@@ -468,7 +365,7 @@
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftMembraneVertices), leftMembraneVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
-        glBindVertexArray(0);   //deaktivira VAO
+        glBindVertexArray(0);   
 
         // Desna membrana
         glBindVertexArray(VAO[4]);
@@ -500,11 +397,11 @@
         glBufferData(GL_ARRAY_BUFFER, sizeof(leftSpeakerMeshVertices), leftSpeakerMeshVertices, GL_STATIC_DRAW);
         // Pozicija (layout(location = 0))
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);   //omoguci atribut na lokaciji 0
+        glEnableVertexAttribArray(0);   
         // Tekstura (layout(location = 1))
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);   // Omogući atribut na lokaciji 1
-        glBindVertexArray(0);   //deaktivira vao
+        glEnableVertexAttribArray(1);  
+        glBindVertexArray(0); 
 
         // Desna mrezica
         glBindVertexArray(VAO[8]);
@@ -524,7 +421,7 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-        // RADIO ON/OFF BUTTON
+        // Radio ON/OFF Button
         float radioOnOffButton[CRES * 2 + 4];
         float r = 0.05;
         radioOnOffButton[0] = 0.8;
@@ -541,7 +438,7 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // RADIO ON/OFF BUTTON INDICATOR
+        // Radio ON/OFF Button Indicator
         float radioOnOffButtonIndicator[CRES * 2 + 4];
         r = 0.04;
         radioOnOffButtonIndicator[0] = 0.8;
@@ -557,7 +454,7 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // RADIO ON/OFF BUTTON CONTENT INDICATOR INNER
+        // Radio ON/OFF Button Indicator Inner
         float radioOnOffButtonIndicatorInner[CRES * 2 + 4];
         r = 0.035;
         radioOnOffButtonIndicatorInner[0] = 0.8;
@@ -573,7 +470,7 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // RADIO ON/OFF BUTTON INDICATOR LINE
+        // Radio ON/OFF Button Line
         stride = 2 * sizeof(float);
         glBindVertexArray(VAO[13]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[13]);
@@ -581,7 +478,7 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
 
-        // RADIO ON/OFF LAMP
+        // Radio ON/OFF Lamp
         float radioOnOffLamp[CRES * 2 + 4];
         r = 0.02;
         radioOnOffLamp[0] = 0.725;
@@ -597,7 +494,7 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // RADIO ON/OFF LAMP LIGHT
+        // Radio ON/OFF Lamp Light
         float radioOnOffLampLight[CRES * 2 + 4];
         r = 0.01;
         radioOnOffLampLight[0] = 0.725;
@@ -623,7 +520,6 @@
         // Krug slidera
         float sliderVertices[(CRES + 2) * 2];
         generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
-
         glBindVertexArray(VAO[17]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
@@ -646,26 +542,17 @@
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
 
-
         // Displej
         glBindVertexArray(VAO[20]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[20]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices, GL_STATIC_DRAW);
-
         // Atribut za poziciju (layout(location = 0))
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
-
         // Atribut za teksturne koordinate (layout(location = 1))
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
-
         glBindVertexArray(0);
-        unsigned int overlayTexture = loadImageToTexture("resources/radio1.png");
-        if (overlayTexture == 0) {
-            std::cout << "Greska pri ucitavanju teksture radio1.png!" << std::endl;
-            return 4;
-        }
 
         // AM/FM Rail
         stride = 2 * sizeof(float);
@@ -700,7 +587,7 @@
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
-        unsigned uTexLoc1 = glGetUniformLocation(AMShader, "uTex");
+        unsigned uTexLoc1 = glGetUniformLocation(textureShader, "uTex");
         glUniform1i(uTexLoc1, 0);
 
         // FM
@@ -720,7 +607,7 @@
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
-        unsigned uTexLoc2 = glGetUniformLocation(FMShader, "uTex");
+        unsigned uTexLoc2 = glGetUniformLocation(textureShader, "uTex");
         glUniform1i(uTexLoc2, 0);
 
         // AM/FM Rail Outline
@@ -784,7 +671,7 @@
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
-        unsigned uTexLoc4 = glGetUniformLocation(signatureShader, "uTex");
+        unsigned uTexLoc4 = glGetUniformLocation(textureShader, "uTex");
         glUniform1i(uTexLoc4, 0);
 
         // Skala
@@ -818,12 +705,11 @@
         scaleValuesVertices[132] = -0.85;
         scaleValuesVertices[133] = 0.075;
 
-        // Pomeranje po Y osi
-        float adjustmentY = -0.1f; // Spuštanje za 0.1 po Y osi
+        // Pomeranje po Y osi (jer sam naknadno menjala neke velicine pa da ne bih svuda oduzimala 0.1)
+        float adjustmentY = -0.1f; 
         for (int i = 1; i < sizeof(scaleValuesVertices) / sizeof(float); i += 2) {
             scaleValuesVertices[i] += adjustmentY;
         }
-
 
         stride = 2 * sizeof(float);
         glBindVertexArray(VAO[32]);
@@ -832,21 +718,21 @@
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(0);
 
-        // Leva strana nosača ručke
+        // Leva strana nosaca rucke
         glBindVertexArray(VAO[33]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[33]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(handleHolderLeft), handleHolderLeft, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // Desna strana nosača ručke
+        // Desna strana nosaca rucke
         glBindVertexArray(VAO[34]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[34]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(handleHolderRight), handleHolderRight, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // Sama ručka
+        // Rucka
         glBindVertexArray(VAO[35]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[35]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(handleBar), handleBar, GL_STATIC_DRAW);
@@ -862,15 +748,12 @@
         glBindVertexArray(VAO[36]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[36]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(backgroundVertices), backgroundVertices, GL_STATIC_DRAW);
-
         // Povezivanje atributa za poziciju
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
-
         // Povezivanje atributa za teksture
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
-
         glBindVertexArray(0);
 
 
@@ -888,27 +771,21 @@
 
             glfwPollEvents();  
 
-            // Animacija vibracija membrane (sinusoidni pokret) - samo ako je radio uključen i slider nije skroz levo
-            float membraneAmplitude = 0.0f; // Podrazumevano nema vibracija
+            float membraneAmplitude = 0.0f; 
 
             if (radioOn && activeStationTexture != 0 && sliderPosition > -0.2f) {
                 volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
                 membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
                 double time = glfwGetTime();
             
-                // Sinhronizovane oscilacije zvučnika
                 float oscillation = 1.0f + membraneAmplitude * sin(time * 20.0f);
                 speakerMembraneScaleLeft = oscillation;
                 speakerMembraneScaleRight = oscillation;
             }
             else {
-                // Resetovanje skale kada je radio isključen ili slider skroz levo
                 speakerMembraneScaleLeft = 1.0f;
                 speakerMembraneScaleRight = 1.0f;
             }
-
-
-
 
             // Animacija vibracija membrane (sinusoidni pokret)
             double time = glfwGetTime();
@@ -919,42 +796,40 @@
 
             // [KOD ZA CRTANJE]
 
-            // Aktivirajte shader za pozadinu
+            // Pozadina
             glUseProgram(backgroundShader);
-
-            // Povežite teksturu pozadine
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, backgroundTexture);
             glUniform1i(glGetUniformLocation(backgroundShader, "backgroundTexture"), 0);
-
-            // Renderujte kvadrat za pozadinu
             glBindVertexArray(VAO[36]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glBindVertexArray(0);
 
             // Antena
-            glUseProgram(antennaShader);
-            glUniform3f(glGetUniformLocation(antennaShader, "color"), 0.8f, 0.8f, 0.8f);
-            glUniform2f(glGetUniformLocation(antennaShader, "offset"), 0.0f, antennaOffset); // Pomeranje tela antene
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.8f, 0.8f, 0.8f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, antennaOffset); 
             glBindVertexArray(VAO[28]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Antena vrh
-            glUseProgram(antennaShader);
-            glUniform3f(glGetUniformLocation(antennaShader, "color"), 0.8f, 0.8f, 0.8f); 
-            glUniform2f(glGetUniformLocation(antennaShader, "offset"), 0.0f, antennaOffset); // Pomeranje vrha antene
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.8f, 0.8f, 0.8f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, antennaOffset); 
             glBindVertexArray(VAO[29]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Antena osnova
-            glUseProgram(antennaBaseShader);
-            glUniform3f(glGetUniformLocation(antennaBaseShader, "color"), 0.5f, 0.5f, 0.5f);
-            glUniform2f(glGetUniformLocation(antennaBaseShader, "offset"), 0.0f, 0.0f); // Nema početnog pomeranja
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.5f, 0.5f, 0.5f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, 0.0f);
             glBindVertexArray(VAO[27]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            glUseProgram(radioBodyShader);
-            unsigned int uBodyColorLoc = glGetUniformLocation(radioBodyShader, "color");
+
+            //???
+            glUseProgram(sharedShader);
+            unsigned int uBodyColorLoc = glGetUniformLocation(sharedShader, "color");
 
             int indexRGB = 0;
             if (radioOn) {
@@ -971,29 +846,29 @@
             glBindVertexArray(VAO[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            glUseProgram(speakerShader);
-            unsigned int uSpeakerColorLoc = glGetUniformLocation(speakerShader, "color");
+            // ZVUCNICI
+            glUseProgram(sharedShader);
+            unsigned int uSpeakerColorLoc = glGetUniformLocation(sharedShader, "color");
 
-            // Levi zvučnik
+            // Levi zvucnik
             glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
             glBindVertexArray(VAO[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Desni zvučnik
+            // Desni zvucik
             glUniform3f(uSpeakerColorLoc, 245 / 255.0f, 245 / 255.0f, 220 / 255.0f);
             glBindVertexArray(VAO[2]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-
+            // MEMBRANE
             glUseProgram(membraneShader);
-
-            unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color"); //
+            unsigned int uMembraneColorLoc = glGetUniformLocation(membraneShader, "color"); 
 
             // Leva membrana - velika
             glUseProgram(membraneShader);
             glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
-            glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.3f, 0.3f, 0.3f); // Svetlija boja za velike membrane
+            glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.3f, 0.3f, 0.3f); 
             glBindVertexArray(VAO[3]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
@@ -1006,7 +881,7 @@
             // Leva membrana - mala
             glUniform2f(glGetUniformLocation(membraneShader, "center"), -0.5, -0.4);
             glUniform1f(glGetUniformLocation(membraneShader, "scale"), speakerMembraneScaleLeft);
-            glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.2f, 0.2f, 0.2f); // Tamnija boja za male membrane
+            glUniform3f(glGetUniformLocation(membraneShader, "color"), 0.2f, 0.2f, 0.2f);
             glBindVertexArray(VAO[5]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
@@ -1016,21 +891,18 @@
             glBindVertexArray(VAO[6]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
 
-            glUseProgram(lineShader);
-
             // Horizontalna linija
-            unsigned int uLineColorLoc = glGetUniformLocation(lineShader, "color");
+            glUseProgram(sharedShader);
+            unsigned int uLineColorLoc = glGetUniformLocation(sharedShader, "color");
             glUniform3f(uLineColorLoc, 0.0f, 0.0f, 0.0f);
             glBindVertexArray(VAO[9]);
             glDrawArrays(GL_LINES, 0, 2);
 
 
-            // Renderovanje mrežice zvučnika
+            // MREZICE ZVUCNIKA
             glUseProgram(textureShader);
-
-            // Setuj uniform za teksturu
             unsigned int textureUniform = glGetUniformLocation(textureShader, "uTex");
-            glUniform1i(textureUniform, 0);  // Teksturna jedinica 0
+            glUniform1i(textureUniform, 0); 
 
             // Mrezica levog zvucnika
             glBindVertexArray(VAO[7]);
@@ -1047,140 +919,121 @@
             glUseProgram(0);
 
 
-            // Izračunavanje proteklog vremena za animaciju
+            // Izracunavanje proteklog vremena za animaciju
             double currentTime = glfwGetTime();
             double deltaTime = currentTime - previousTime;
             previousTime = currentTime;
 
-            // Resetovanje vremena ako je radio isključen
             if (!radioOn) {
-                timeElapsed = 0.0f; // Resetuje animaciju ako je radio isključen
+                timeElapsed = 0.0f; 
             }
 
-            // Izračunavanje interpolirane boje za lampicu kada je radio uključen
-            float lampRed = 0.0f, lampGreen = 0.0f, lampBlue = 0.0f; // Neutralna boja kada je radio isključen
+            // Izracunavanje interpolirane boje za lampicu kada je radio ukljucen
+            float lampRed = 0.0f, lampGreen = 0.0f, lampBlue = 0.0f; 
             if (radioOn) {
-                timeElapsed += deltaTime; // Ažuriranje vremena za animaciju
-                float intensity = (sin(timeElapsed * 2.0f) + 1.0f) / 2.0f; // Intenzitet varira od 0 do 1
+                timeElapsed += deltaTime; // Azuriranje vremena za animaciju
+                float intensity = (sin(timeElapsed * 2.0f) + 1.0f) / 2.0f;
                 lampRed = 1.0f; 
                 lampGreen = 1.0f - 0.5f * intensity; 
                 lampBlue = 1.0f - intensity; 
             }
 
-            // Renderovanje ON/OFF buttona
-            glUseProgram(radioOnOffButtonShader);
+            // ON/OFF BUTTON SA SVIM NJEGOVIM DELOVIMA + LAMPICA
+            glUseProgram(basicShader);
 
             // ON/OFF Button
-            glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.2f, 0.2f, 0.2f);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.2f, 0.2f, 0.2f);
             glBindVertexArray(VAO[10]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButton) / (2 * sizeof(float)));
 
-            // Renderovanje ON/OFF button indikatora
-            glUseProgram(radioOnOffButtonIndicatorShader);
+            // Postavljanje boje indikatora u zavisnosti od toga da li je radio ukljucen (krug)
+            float indicatorR = radioOn ? 1.0f : 0.0f; 
+            float indicatorG = radioOn ? 1.0f : 0.0f; 
+            float indicatorB = radioOn ? 1.0f : 0.0f; 
 
-            // Postavljanje boje kruga: crno kada je isključen, belo kada je uključen
-            float indicatorR = radioOn ? 1.0f : 0.0f; // Crvena komponenta
-            float indicatorG = radioOn ? 1.0f : 0.0f; // Zelena komponenta
-            float indicatorB = radioOn ? 1.0f : 0.0f; // Plava komponenta
-
-            // Postavljanje uniforma za boju indikatora
-            glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), indicatorR, indicatorG, indicatorB);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), indicatorR, indicatorG, indicatorB);
 
             // Krug ON/OFF button indikatora
             glBindVertexArray(VAO[11]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicator) / (2 * sizeof(float)));
 
-
             // Unutrasnji deo ON/OFF button indikatora
-            glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorShader, "color"), 0.2f, 0.2f, 0.2f);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.2f, 0.2f, 0.2f);
             glBindVertexArray(VAO[12]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffButtonIndicatorInner) / (2 * sizeof(float)));
 
 
-
-            // Renderovanje sredisnje linije na ON/OFF button indikatoru
-            glUseProgram(radioOnOffButtonIndicatorLineShader);
-
-
-            // Postavljanje boje linije: crna kada je radio isključen, bela kada je uključen
+            // Postavljanje boje linije u zavisnosti od toga da li je radio ukljcuen (linija u sredini)
             float lineR = radioOn ? 1.0f : 0.0f; 
             float lineG = radioOn ? 1.0f : 0.0f; 
             float lineB = radioOn ? 1.0f : 0.0f; 
 
-            // Postavljanje uniform boje linije
-            glUniform3f(glGetUniformLocation(radioOnOffButtonIndicatorLineShader, "color"), lineR, lineG, lineB);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), lineR, lineG, lineB);
 
             // Srednja linija na ON/OFF button indikatoru
             glBindVertexArray(VAO[13]);
             glLineWidth(2.0f);
             glDrawArrays(GL_LINES, 0, 2);
 
-
-            // Renderovanje lampice
-            glUseProgram(radioOnOffLampShader);
-
             // Lampica osnovna
-            glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), 0.2f, 0.2f, 0.2f);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.2f, 0.2f, 0.2f);
             glBindVertexArray(VAO[14]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
             // Boja lampice
-            glUniform3f(glGetUniformLocation(radioOnOffLampShader, "color"), lampRed, lampGreen, lampBlue);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), lampRed, lampGreen, lampBlue);
             glBindVertexArray(VAO[15]);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(radioOnOffLamp) / (2 * sizeof(float)));
 
 
             // Slider i traka
             volumeBarIndicatorOffset = (sliderPosition + 0.5f); // Skaliranje u opsegu [0, 1]
-            glUseProgram(lineShader);
-            glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
+            glUseProgram(sharedShader);
+            glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.7f, 0.7f, 0.7f);
             glBindVertexArray(VAO[16]);
             glDrawArrays(GL_LINES, 0, 2);
 
             // Krug slidera
             float sliderVertices[(CRES + 2) * 2];
             generateCircle(sliderVertices, sliderPosition, -0.2f, 0.03f);
-
             glBindVertexArray(VAO[17]);
             glBindBuffer(GL_ARRAY_BUFFER, VBO[17]);
             glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_DYNAMIC_DRAW);
 
-            //glBufferData(GL_ARRAY_BUFFER, sizeof(sliderVertices), sliderVertices, GL_STATIC_DRAW);
-            glUseProgram(radioOnOffButtonShader);
-            glUniform3f(glGetUniformLocation(radioOnOffButtonShader, "color"), 0.4f, 0.4f, 0.4f);
+            // Progress bar - zasto razlicit shader za indikator i njega
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.4f, 0.4f, 0.4f);
             glDrawArrays(GL_TRIANGLE_FAN, 0, CRES + 2);
-
-            // Progress bar
             updateProgressBar(sliderPosition, VBO[19]);
 
-            glUseProgram(lineShader);
-            glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f);
+            // Progress bar indikator
+            glUseProgram(sharedShader);
+            glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.7f, 0.7f, 0.7f);
             glBindVertexArray(VAO[18]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-            // Progress bar indikator
+            
             if (!radioOn) {
-                glUniform3f(glGetUniformLocation(lineShader, "color"), 0.7f, 0.7f, 0.7f); // Siva boja kada je isključen
+                glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.7f, 0.7f, 0.7f);
             }
             else {
-                glUniform3f(glGetUniformLocation(lineShader, "color"), 0.0f, 1.0f, 0.0f); // Zelena kada je uključen
+                glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.0f, 1.0f, 0.0f);
             }
             glBindVertexArray(VAO[19]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Renderovanje displeja
-            glUseProgram(radioBodyShader); // Shader za prikaz displeja
-            glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.0f, 0.0f, 0.0f); // Crna boja
-            glBindVertexArray(VAO[20]); // Displej VAO
+            // Displej
+            glUseProgram(sharedShader);
+            glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.0f, 0.0f, 0.0f);
+            glBindVertexArray(VAO[20]); 
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Detekcija aktivne stanice
-            activeStationTexture = 0; // Nijedna stanica nije aktivna po defaultu
-            if (radioOn && antennaOffset > -0.5f) { // Samo ako je radio uključen i antena podignuta
+            activeStationTexture = 0; 
+            if (radioOn && antennaOffset > -0.5f) { 
                 for (const auto& station : stations) {
                     if (scaleIndicatorOffset >= station.startFrequency && scaleIndicatorOffset <= station.endFrequency) {
-                        if ((FMon && station.isFM) || (!FMon && !station.isFM)) { // Provera režima
-                            activeStationTexture = station.texture; // Nađi aktivnu stanicu
+                        if ((FMon && station.isFM) || (!FMon && !station.isFM)) { 
+                            activeStationTexture = station.texture; 
                             break;
                         }
                     }
@@ -1188,63 +1041,51 @@
             }
 
 
-            // Animacija zvučnika samo ako je antena izvučena
             if (radioOn && activeStationTexture != 0 && sliderPosition > -0.2f && antennaOffset > -0.5f) {
 
-                textureOffset += scrollSpeed; // Pomeri offset ulevo
+                textureOffset += scrollSpeed;
                 if (textureOffset <= -1.0f) {
-                    textureOffset += 1.0f; // Resetuje kada pređe granicu
+                    textureOffset += 1.0f; 
                 }
 
-                glUseProgram(scrollTextureShader); // Shader za skrolujuću teksturu
+                glUseProgram(scrollTextureShader);
                 glUniform1f(glGetUniformLocation(scrollTextureShader, "uOffset"), textureOffset);
-
-                // Postavi uniform za teksturu
                 unsigned int textureUniform = glGetUniformLocation(scrollTextureShader, "uTex");
                 glUniform1i(textureUniform, 0);
-
-                // Aktiviraj teksturu
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, activeStationTexture);
-
-                // Iscrtavanje teksture za aktivnu stanicu
-                glBindVertexArray(VAO[20]); // Koristimo isti VAO za displej
+                glBindVertexArray(VAO[20]);
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
                 volumeBarIndicatorOffset = (sliderPosition + 0.2f) / 0.4f; // Normalizacija slidera u opsegu [0, 1]
                 membraneAmplitude = volumeBarIndicatorOffset * 0.05f; // Maksimalna amplituda je 0.05
                 double time = glfwGetTime();
 
-                // Sinhronizovane oscilacije zvučnika
                 float oscillation = 1.0f + membraneAmplitude * sin(time * 20.0f);
                 speakerMembraneScaleLeft = oscillation;
                 speakerMembraneScaleRight = oscillation;
             }
             else {
-                // Resetovanje skale kada je radio isključen, antena sklopljena, ili slider skroz levo
                 speakerMembraneScaleLeft = 1.0f;
                 speakerMembraneScaleRight = 1.0f;
             }
 
-
-
-
-
             // AM/FM RAIL
-            glUseProgram(AMFMRailShader);
-            glUniform3f(glGetUniformLocation(AMFMRailShader, "color"), 0.45f, 0.45f, 0.45f);
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.45f, 0.45f, 0.45f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, 0.0f);
             glBindVertexArray(VAO[21]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // AM/FM SWITCH
-            glUseProgram(AMFMSwitchShader);
-            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
-            glUniform3f(glGetUniformLocation(AMFMSwitchShader, "color"), 0.8f, 0.8f, 0.8f);
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.8f, 0.8f, 0.8f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
             glBindVertexArray(VAO[22]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // AM
-            glUseProgram(AMShader);
+            glUseProgram(textureShader);
             glBindVertexArray(VAO[23]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, AMTexture);
@@ -1252,7 +1093,7 @@
             glBindTexture(GL_TEXTURE_2D, 0);
 
             // FM
-            glUseProgram(AMShader);
+            glUseProgram(textureShader);
             glBindVertexArray(VAO[24]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, FMTexture);
@@ -1260,8 +1101,9 @@
             glBindTexture(GL_TEXTURE_2D, 0);
 
             // AM/FM Rail Outlines
-            glUseProgram(AMFMRailOutlineShader);
-            glUniform3f(glGetUniformLocation(AMFMRailOutlineShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, 0.0f);
             glBindVertexArray(VAO[25]);
             glDrawArrays(GL_LINES, 0, 2);
             glDrawArrays(GL_LINES, 1, 2);
@@ -1269,8 +1111,8 @@
             glDrawArrays(GL_LINES, 3, 2);
 
             // AM/FM Switch Outlines
-            glUseProgram(AMFMSwitchOutlineShader);
-            glUniform2f(glGetUniformLocation(AMFMSwitchShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
+            glUseProgram(basicShader);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), FMon ? 0.05f : -0.05f, 0.0f);
             glBindVertexArray(VAO[26]);
             glDrawArrays(GL_LINES, 0, 2);
             glDrawArrays(GL_LINES, 1, 2);
@@ -1278,7 +1120,7 @@
             glDrawArrays(GL_LINES, 3, 2);
 
             // Potpis
-            glUseProgram(signatureShader);
+            glUseProgram(textureShader);
             glBindVertexArray(VAO[30]);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, signatureTexture);
@@ -1286,14 +1128,15 @@
             glBindTexture(GL_TEXTURE_2D, 0);
 
             // Skala
-            glUseProgram(scaleShader);
-            glUniform3f(glGetUniformLocation(scaleShader, "color"), 1.0f, 1.0f, 1.0f);
+            glUseProgram(basicShader);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 1.0f, 1.0f, 1.0f);
             glBindVertexArray(VAO[31]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             // Vrednosti skale
-            glUseProgram(scaleValuesShader);
-            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUseProgram(basicShader);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.0f, 0.0f, 0.0f);
             glBindVertexArray(VAO[32]);
             glLineWidth(3.0f);
             glDrawArrays(GL_LINES, 0, 2);
@@ -1327,37 +1170,32 @@
             glDrawArrays(GL_LINES, 54, 2);
             glDrawArrays(GL_LINES, 56, 2);
             glDrawArrays(GL_LINES, 58, 2);
-            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 1.0f, 0.5f, 0.0f);
-            glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), scaleIndicatorOffset, 0.0f); // Pomeraj kazaljke
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 1.0f, 0.5f, 0.0f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), scaleIndicatorOffset, 0.0f); 
             glLineWidth(3.6f);
             glDrawArrays(GL_LINES, 60, 2);
-            glUniform3f(glGetUniformLocation(scaleValuesShader, "color"), 0.0f, 0.0f, 0.0f);
-            glUniform2f(glGetUniformLocation(scaleValuesShader, "offset"), 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(basicShader, "color"), 0.0f, 0.0f, 0.0f);
+            glUniform2f(glGetUniformLocation(basicShader, "offset"), 0.0f, 0.0f);
             glLineWidth(1.0f);
             glDrawArrays(GL_LINES, 62, 2);
             glDrawArrays(GL_LINES, 63, 2);
             glDrawArrays(GL_LINES, 64, 2);
             glDrawArrays(GL_LINES, 65, 2);
 
-            // Renderovanje leve strane nosača ručke
-            glUseProgram(radioBodyShader);  // Koristi shader za telo radija
-            glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.6f, 0.6f, 0.6f); // Siva boja
+            // Leva strana nosaca rucke
+            glUseProgram(sharedShader);
+            glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.6f, 0.6f, 0.6f);
             glBindVertexArray(VAO[33]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Renderovanje desne strane nosača ručke
+            // Desna strana nosaca rucke
             glBindVertexArray(VAO[34]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            // Renderovanje horizontalne ručke
-            glUniform3f(glGetUniformLocation(radioBodyShader, "color"), 0.2f, 0.2f, 0.2f); // Tamnija boja
+            // Rucka
+            glUniform3f(glGetUniformLocation(sharedShader, "color"), 0.2f, 0.2f, 0.2f);
             glBindVertexArray(VAO[35]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-
-
-
-
 
 
             glfwSwapBuffers(window);
@@ -1368,22 +1206,18 @@
         // Brisanje resursa
         glDeleteTextures(1, &meshTexture);
         glDeleteTextures(1, &backgroundTexture);
-        //TODO: obrisati ostale teksture
+        glDeleteTextures(1, &scrollTextureShader);
 
         glDeleteBuffers(37, VBO);
         glDeleteVertexArrays(37, VAO);
 
         // Brisanje shader programa
-        glDeleteProgram(radioBodyShader);
-        glDeleteProgram(speakerShader);
+        glDeleteProgram(sharedShader);
         glDeleteProgram(membraneShader);
-        glDeleteProgram(lineShader);
         glDeleteProgram(textureShader);
-        glDeleteProgram(radioOnOffButtonShader);
-        glDeleteProgram(radioOnOffButtonIndicatorShader);
-        glDeleteProgram(radioOnOffButtonIndicatorLineShader);
-        glDeleteProgram(radioOnOffLampShader);
-        //TODO: obrisati ostale shadere
+        glDeleteProgram(backgroundShader);
+        glDeleteProgram(scrollTextureShader);
+        glDeleteProgram(basicShader);
 
         // Terminate GLFW (Sve OK - batali program)
         glfwTerminate();
@@ -1470,9 +1304,8 @@
         return program;
     }
 
-    // Funkcija za generisanje kruga
     void generateCircle(float* circleVertices, float centerX, float centerY, float radius) {
-        circleVertices[0] = centerX;  // Centar kruga
+        circleVertices[0] = centerX; 
         circleVertices[1] = centerY;
         for (int i = 0; i <= CRES; i++) {
             float angle = (2.0f * 3.141592f / CRES) * i;
@@ -1516,11 +1349,10 @@
         float progressBarHeight = 0.02f;
         float progressBarY = -0.25f;
 
-        // Računanje popunjenosti
         float progressBarFill = (sliderPosition + 0.2f) / 0.4f; // Normalizacija vrednosti u opsegu [0.0, 1.0]
         float filledWidth = progressBarFill * progressBarWidth;
 
-        // Definisanje vertekse za popunjeni deo progress bara
+        // Definisanje verteksa za popunjeni deo progress bara
         float progressBarFillVertices[] = {
             -progressBarWidth / 2, progressBarY - progressBarHeight / 2,
             -progressBarWidth / 2 + filledWidth, progressBarY - progressBarHeight / 2,
@@ -1535,10 +1367,10 @@
     }
 
     void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-        // yOffset nam govori da li je točkić pomeren napred (pozitivno) ili nazad (negativno)
+        // yOffset nam govori da li je tockic pomeren napred (pozitivno) ili nazad (negativno)
         scaleIndicatorOffset += 0.01f * static_cast<float>(yOffset);
 
-        // Ograničavamo kazaljku na ivice skale
+        // Ogranicavamo kazaljku na ivice skale
         if (scaleIndicatorOffset < -0.04f) { // Leva ivica
             scaleIndicatorOffset = -0.04f;
         }
@@ -1550,7 +1382,6 @@
 
         std::cout << "Scale indicator offset: " << scaleIndicatorOffset << std::endl;
     }
-
 
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
         if (action == GLFW_RELEASE) return;
@@ -1572,5 +1403,84 @@
                 antennaOffset = round((antennaOffset - 0.01f) * 100.0) / 100.0;
             }
             break;
+        }
+    }
+
+    void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            if (action == GLFW_PRESS) {
+                // Dobijanje pozicije kursora u pikselima
+                double xPos, yPos;
+                glfwGetCursorPos(window, &xPos, &yPos);
+
+                // Dobijanje dimenzija prozora
+                int width, height;
+                glfwGetWindowSize(window, &width, &height);
+
+                // Konverzija koordinata u OpenGL normalizovani prostor [-1, 1]
+                float normX = 2.0f * (xPos / width) - 1.0f;
+                float normY = 1.0f - 2.0f * (yPos / height); // OpenGL ima obrnutu osu Y
+
+                // Definicija centra i radijus dugmeta u normalizovanim koordinatama - provera za ON/OFF button
+                const float buttonCenterX = 0.8f;  // X koordinata centra dugmeta
+                const float buttonCenterY = 0.025f; // Y koordinata centra dugmeta
+                const float buttonRadius = 0.05f; // Poluprecnik dugmeta
+
+                // da li je klik unutar radijusa dugmeta
+                float dx = normX - buttonCenterX;
+                float dy = normY - buttonCenterY;
+
+                if ((dx * dx + dy * dy) <= (buttonRadius * buttonRadius)) {
+                    if (radioOn) {
+                        lastProgressBarFill = progressBarFill;
+                        progressBarFill = 0.0f;
+                    }
+                    else {
+                        progressBarFill = lastProgressBarFill;
+                    }
+                    radioOn = !radioOn;
+                    std::cout << "Kliknuto na dugme! Stanje radioOn: " << (radioOn ? "Ukljuceno" : "Iskljuceno") << std::endl;
+                    return;
+                }
+
+                // Provera za slider (ogranicavanje na podrucje slidera)
+                const float sliderRadius = 0.05f;
+                float sliderCenterX = sliderPosition;
+                float sliderCenterY = -0.2f;
+
+                dx = normX - sliderCenterX;
+                dy = normY - sliderCenterY;
+
+                if ((dx * dx + dy * dy) <= (sliderRadius * sliderRadius)) {
+                    sliderDragging = true;  // Aktivira prevlacenje slidera
+                    std::cout << "Slider dragging started" << std::endl;
+                    return;
+                }
+            }
+            else if (action == GLFW_RELEASE) {
+                if (sliderDragging) {
+                    // Prestanak prevlacenja slidera
+                    sliderDragging = false;
+                    std::cout << "Slider released at position: " << sliderPosition << std::endl;
+                }
+            }
+        }
+    }
+
+
+    void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
+        if (sliderDragging) {
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+
+            float normX = 2.0f * (xPos / width) - 1.0f;
+
+            // Ogranici poziciju slidera
+            sliderPosition = fmaxf(-0.2f, fminf(0.2f, normX));
+
+            // Normalizacija sliderPosition za progress bar popunjenost
+            progressBarFill = (sliderPosition + 0.2f) / 0.4f; // Popunjenost od 0.0 do 1.0
+            lastProgressBarFill = progressBarFill;
+            std::cout << "Slider moved to position: " << sliderPosition << ", Progress bar fill: " << progressBarFill << std::endl;
         }
     }
