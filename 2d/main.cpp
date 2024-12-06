@@ -12,6 +12,8 @@
 #include <GL/glew.h>   //Omogucava upotrebu OpenGL naredbi
 #include <GLFW/glfw3.h> //Olaksava pravljenje i otvaranje prozora (konteksta) sa OpenGL sadrzajem
 #include "stb_image.h"
+#include <chrono>
+#include <thread>
 
 bool radioOn = false;
 float timeElapsed = 0.0f; //Proteklo vreme za animaciju lampice
@@ -33,6 +35,8 @@ float antennaOffset = -0.55f; //Antena na pocetku uvucena
 float scaleIndicatorOffset = 0.0f;
 float textureOffset = 0.0f; 
 float scrollSpeed = 0.0006f; 
+const int TARGET_FPS = 60;
+const double TARGET_FRAME_TIME = 1.0 / TARGET_FPS;
 
 unsigned int compileShader(GLenum type, const char* source);     //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
 unsigned int createShader(const char* vsSource, const char* fsSource);   //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource i Fragment sejdera na putanji fsSource
@@ -71,8 +75,8 @@ int main(void)
 
     // kreiranje prozora 500x500
     GLFWwindow* window; //mesto u memoriji za prozor
-    unsigned int wWidth = 500;
-    unsigned int wHeight = 500;
+    unsigned int wWidth = 1024;
+    unsigned int wHeight = 1024;
     const char wTitle[] = "Radio";    //naslov prozora
     window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL, NULL);
 
@@ -1189,6 +1193,18 @@ int main(void)
 
 
         glfwSwapBuffers(window);
+
+        // Ograničavanje frejmova po sekundi
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - previousTime;
+
+        if (deltaTime < TARGET_FRAME_TIME) {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(static_cast<int>((TARGET_FRAME_TIME - deltaTime) * 1000))
+            );
+        }
+
+        previousTime = glfwGetTime();
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
