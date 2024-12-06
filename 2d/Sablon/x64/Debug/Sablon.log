@@ -95,10 +95,10 @@ D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(875,75): warning C4
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(882,74): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(927,28): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
 D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1058,31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1198,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1401,68): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1406,68): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1424,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1425,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1479,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1171,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1374,68): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1379,68): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1397,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1398,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\2d\main.cpp(1452,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Sablon.vcxproj -> D:\Fakultet\7\grafika\projekat\computer-graphics\2d\x64\Debug\Sablon.exe

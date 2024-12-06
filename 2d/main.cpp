@@ -689,10 +689,10 @@ int main(void)
     // Vrednosti skale
     float position = 0.8;
     for (int i = 1; i <= 29; i++) {
-        scaleValuesVertices[4 * i] = -0.8 + (i - 1) * 0.05;
-        scaleValuesVertices[4 * i + 1] = 0.1375;
-        scaleValuesVertices[4 * i + 2] = -0.8 + (i - 1) * 0.05;
-        scaleValuesVertices[4 * i + 3] = 0.1125;
+        scaleValuesVertices[4 * i] = -0.8 + (i - 1) * 0.05;     //x
+        scaleValuesVertices[4 * i + 1] = 0.1375;    //y
+        scaleValuesVertices[4 * i + 2] = -0.8 + (i - 1) * 0.05; //x
+        scaleValuesVertices[4 * i + 3] = 0.1125;    //y
     }
     scaleValuesVertices[120] = -0.80; // X koordinata donje tačke kazaljke (središnja linija)
     scaleValuesVertices[121] = 0.075; // Y koordinata donje tačke kazaljke (središnja linija)
@@ -1135,35 +1135,8 @@ int main(void)
         glLineWidth(3.0f);
         glDrawArrays(GL_LINES, 0, 2);
         glLineWidth(2.0f);
-        glDrawArrays(GL_LINES, 2, 2);
-        glDrawArrays(GL_LINES, 4, 2);
-        glDrawArrays(GL_LINES, 6, 2);
-        glDrawArrays(GL_LINES, 8, 2);
-        glDrawArrays(GL_LINES, 10, 2);
-        glDrawArrays(GL_LINES, 12, 2);
-        glDrawArrays(GL_LINES, 14, 2);
-        glDrawArrays(GL_LINES, 16, 2);
-        glDrawArrays(GL_LINES, 18, 2);
-        glDrawArrays(GL_LINES, 20, 2);
-        glDrawArrays(GL_LINES, 22, 2);
-        glDrawArrays(GL_LINES, 24, 2);
-        glDrawArrays(GL_LINES, 26, 2);
-        glDrawArrays(GL_LINES, 28, 2);
-        glDrawArrays(GL_LINES, 30, 2);
-        glDrawArrays(GL_LINES, 32, 2);
-        glDrawArrays(GL_LINES, 34, 2);
-        glDrawArrays(GL_LINES, 36, 2);
-        glDrawArrays(GL_LINES, 38, 2);
-        glDrawArrays(GL_LINES, 40, 2);
-        glDrawArrays(GL_LINES, 42, 2);
-        glDrawArrays(GL_LINES, 44, 2);
-        glDrawArrays(GL_LINES, 46, 2);
-        glDrawArrays(GL_LINES, 48, 2);
-        glDrawArrays(GL_LINES, 50, 2);
-        glDrawArrays(GL_LINES, 52, 2);
-        glDrawArrays(GL_LINES, 54, 2);
-        glDrawArrays(GL_LINES, 56, 2);
-        glDrawArrays(GL_LINES, 58, 2);
+        glDrawArrays(GL_LINES, 2, 58);
+        
         glUniform3f(glGetUniformLocation(basicShader, "color"), 1.0f, 0.5f, 0.0f);
         glUniform2f(glGetUniformLocation(basicShader, "offset"), scaleIndicatorOffset, 0.0f); 
         glLineWidth(3.6f);
