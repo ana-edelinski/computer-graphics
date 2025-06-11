@@ -96,31 +96,68 @@ int main(void)
          0.5f, -0.25f,  0.5f,   1, 1, 0, 1,
          0.5f,  0.25f,  0.5f,   1, 1, 0, 1,
 
-         // Top face
-         -0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
-          0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
-          0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
-          0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
-         -0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
-         -0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
-
-         // Bottom face
-         -0.5f, -0.25f, -0.5f,   0, 1, 1, 1,
-          0.5f, -0.25f, -0.5f,   0, 1, 1, 1,
-          0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
-          0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
-         -0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
-         -0.5f, -0.25f, -0.5f,   0, 1, 1, 1
+         // Bottom face (bele boje)
+         -0.5f, -0.25f, -0.5f,   1, 1, 1, 1,
+          0.5f, -0.25f, -0.5f,   1, 1, 1, 1,
+          0.5f, -0.25f,  0.5f,   1, 1, 1, 1,
+          0.5f, -0.25f,  0.5f,   1, 1, 1, 1,
+         -0.5f, -0.25f,  0.5f,   1, 1, 1, 1,
+         -0.5f, -0.25f, -0.5f,   1, 1, 1, 1
     };
 
     float waterPlane[] = {
-    -0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
-     0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
-     0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
-     0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
-    -0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
-    -0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f
+        -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+         0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+         0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+         0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+        -0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+        -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f
     };
+
+
+
+
+    float topFrameVertices[] = {
+        // Gornja traka
+        -0.5f, 0.25f, -0.5f,   1, 0, 1, 1,
+         0.5f, 0.25f, -0.5f,   1, 0, 1, 1,
+         0.5f, 0.25f, -0.3f,   1, 0, 1, 1,
+
+         0.5f, 0.25f, -0.3f,   1, 0, 1, 1,
+        -0.5f, 0.25f, -0.3f,   1, 0, 1, 1,
+        -0.5f, 0.25f, -0.5f,   1, 0, 1, 1,
+
+        // Donja traka
+        -0.5f, 0.25f, 0.3f,    1, 0, 1, 1,
+         0.5f, 0.25f, 0.3f,    1, 0, 1, 1,
+         0.5f, 0.25f, 0.5f,    1, 0, 1, 1,
+
+         0.5f, 0.25f, 0.5f,    1, 0, 1, 1,
+        -0.5f, 0.25f, 0.5f,    1, 0, 1, 1,
+        -0.5f, 0.25f, 0.3f,    1, 0, 1, 1,
+
+        // Leva traka
+        -0.5f, 0.25f, -0.3f,   1, 0, 1, 1,
+        -0.3f, 0.25f, -0.3f,   1, 0, 1, 1,
+        -0.3f, 0.25f, 0.3f,    1, 0, 1, 1,
+
+        -0.3f, 0.25f, 0.3f,    1, 0, 1, 1,
+        -0.5f, 0.25f, 0.3f,    1, 0, 1, 1,
+        -0.5f, 0.25f, -0.3f,   1, 0, 1, 1,
+
+        // Desna traka
+         0.3f,  0.25f, -0.3f,  1, 0, 1, 1,
+         0.5f,  0.25f, -0.3f,  1, 0, 1, 1,
+         0.5f,  0.25f,  0.3f,  1, 0, 1, 1,
+
+         0.5f,  0.25f,  0.3f,  1, 0, 1, 1,
+         0.3f,  0.25f,  0.3f,  1, 0, 1, 1,
+         0.3f,  0.25f, -0.3f,  1, 0, 1, 1
+    };
+
+
+
+
 
 
 
@@ -149,6 +186,26 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(waterPlane), waterPlane, GL_STATIC_DRAW);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    unsigned int frameVAO, frameVBO;
+    glGenVertexArrays(1, &frameVAO);
+    glGenBuffers(1, &frameVBO);
+
+    glBindVertexArray(frameVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, frameVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(topFrameVertices), topFrameVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
 
 
@@ -276,15 +333,16 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // prvo voda (providna)
-        glDepthMask(GL_FALSE);
+        // prvo voda 
         glBindVertexArray(waterVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDepthMask(GL_TRUE);
 
-        // zatim kvadar (sada gornja stranica propušta svetlost)
+        // zatim kvadar 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindVertexArray(frameVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 24);
 
 
 
@@ -300,6 +358,10 @@ int main(void)
 
     glDeleteVertexArrays(1, &waterVAO);
     glDeleteBuffers(1, &waterVBO);
+
+    glDeleteVertexArrays(1, &frameVAO);
+    glDeleteBuffers(1, &frameVBO);
+
 
     glDeleteProgram(unifiedShader);
 
