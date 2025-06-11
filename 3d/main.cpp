@@ -205,9 +205,33 @@ int main(void)
          -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f
     };
 
+    float pyramidVertices[] = {
+        // Vrh
+        0.0f, 0.551f, 0.0f,     1.0f, 0.5f, 0.0f, 1.0f,
 
+        // Baza
+        -0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+        -0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
 
+        // Strane (4 trougla)
+        0.0f, 0.551f, 0.0f,     1.0f, 0.5f, 0.0f, 1.0f,
+        -0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
 
+        0.0f, 0.551f, 0.0f,     1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+
+        0.0f, 0.551f, 0.0f,     1.0f, 0.5f, 0.0f, 1.0f,
+         0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+        -0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+
+        0.0f, 0.551f, 0.0f,     1.0f, 0.5f, 0.0f, 1.0f,
+        -0.05f, 0.451f,  0.05f, 1.0f, 0.5f, 0.0f, 1.0f,
+        -0.05f, 0.451f, -0.05f, 1.0f, 0.5f, 0.0f, 1.0f
+    };
 
 
 
@@ -266,6 +290,18 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    unsigned int pyramidVAO, pyramidVBO;
+    glGenVertexArrays(1, &pyramidVAO);
+    glGenBuffers(1, &pyramidVBO);
+
+    glBindVertexArray(pyramidVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, pyramidVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidVertices), pyramidVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
 
@@ -414,6 +450,11 @@ int main(void)
         glBindVertexArray(pillarVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        // piramida na vrhu stuba
+        glBindVertexArray(pyramidVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -432,6 +473,9 @@ int main(void)
 
     glDeleteVertexArrays(1, &pillarVAO);
     glDeleteBuffers(1, &pillarVBO);
+
+    glDeleteVertexArrays(1, &pyramidVAO);
+    glDeleteBuffers(1, &pyramidVBO);
 
 
     glDeleteProgram(unifiedShader);
