@@ -155,6 +155,55 @@ int main(void)
          0.3f,  0.25f, -0.3f,  1, 0, 1, 1
     };
 
+    float pillarVertices[] = {
+        // Front
+        -0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+
+        // Back
+        -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+
+        // Left
+        -0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+        -0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+
+        // Right
+         0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+
+         // Top
+         -0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         -0.05f, 0.451f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         -0.05f, 0.451f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+
+         // Bottom
+         -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+          0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         -0.05f, 0.251f,  0.05f,  0.6f, 0.2f, 0.8f, 1.0f,
+         -0.05f, 0.251f, -0.05f,  0.6f, 0.2f, 0.8f, 1.0f
+    };
 
 
 
@@ -203,6 +252,22 @@ int main(void)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    unsigned int pillarVAO, pillarVBO;
+    glGenVertexArrays(1, &pillarVAO);
+    glGenBuffers(1, &pillarVBO);
+
+    glBindVertexArray(pillarVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, pillarVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(pillarVertices), pillarVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -341,10 +406,13 @@ int main(void)
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        // gornji okvir
         glBindVertexArray(frameVAO);
         glDrawArrays(GL_TRIANGLES, 0, 24);
 
-
+        //stub
+        glBindVertexArray(pillarVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -361,6 +429,9 @@ int main(void)
 
     glDeleteVertexArrays(1, &frameVAO);
     glDeleteBuffers(1, &frameVBO);
+
+    glDeleteVertexArrays(1, &pillarVAO);
+    glDeleteBuffers(1, &pillarVBO);
 
 
     glDeleteProgram(unifiedShader);
