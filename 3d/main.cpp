@@ -18,10 +18,13 @@
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
 
+float radius = 2.0f;       // udaljenost kamere od centra
+float camAngle = 0.0f;     // ugao u XZ ravni
+float camHeight = 0.0f;    // visina kamere (Y osa)
+
+
 int main(void)
 {
-
-   
     if (!glfwInit())
     {
         std::cout<<"GLFW Biblioteka se nije ucitala! :(\n";
@@ -59,17 +62,57 @@ int main(void)
 
     unsigned int unifiedShader = createShader("basic.vert", "basic.frag");
 
-    float vertices[] =
-    {
-        //X    Y    Z       R    G    B    A
-        0.25, 0.5, 0.75,   1.0, 0.0, 0.0, 0.0, //Crveni trougao - Prednji
-       -0.25, 0.5, 0.75,   1.0, 0.0, 0.0, 0.0,
-        0.0, -0.5, 0.75,   1.0, 0.0, 0.0, 0.0,
+    float vertices[] = {
+        // Pozicija           // Boja (RGBA)
+        // Front face
+        -0.5f, -0.25f,  0.5f,   1, 0, 0, 1,
+         0.5f, -0.25f,  0.5f,   1, 0, 0, 1,
+         0.5f,  0.25f,  0.5f,   1, 0, 0, 1,
+         0.5f,  0.25f,  0.5f,   1, 0, 0, 1,
+        -0.5f,  0.25f,  0.5f,   1, 0, 0, 1,
+        -0.5f, -0.25f,  0.5f,   1, 0, 0, 1,
 
-        0.25, -0.5, 0.0,   0.0, 0.0, 1.0, 0.0, //Plavi trougao - Zadnji
-       -0.25, -0.5, 0.0,   0.0, 0.0, 1.0, 0.0,
-        0.0,   0.5, 0.0,   0.0, 0.0, 1.0, 0.0
+        // Back face
+        -0.5f, -0.25f, -0.5f,   0, 1, 0, 1,
+         0.5f, -0.25f, -0.5f,   0, 1, 0, 1,
+         0.5f,  0.25f, -0.5f,   0, 1, 0, 1,
+         0.5f,  0.25f, -0.5f,   0, 1, 0, 1,
+        -0.5f,  0.25f, -0.5f,   0, 1, 0, 1,
+        -0.5f, -0.25f, -0.5f,   0, 1, 0, 1,
+
+        // Left face
+        -0.5f,  0.25f,  0.5f,   0, 0, 1, 1,
+        -0.5f,  0.25f, -0.5f,   0, 0, 1, 1,
+        -0.5f, -0.25f, -0.5f,   0, 0, 1, 1,
+        -0.5f, -0.25f, -0.5f,   0, 0, 1, 1,
+        -0.5f, -0.25f,  0.5f,   0, 0, 1, 1,
+        -0.5f,  0.25f,  0.5f,   0, 0, 1, 1,
+
+        // Right face
+         0.5f,  0.25f,  0.5f,   1, 1, 0, 1,
+         0.5f,  0.25f, -0.5f,   1, 1, 0, 1,
+         0.5f, -0.25f, -0.5f,   1, 1, 0, 1,
+         0.5f, -0.25f, -0.5f,   1, 1, 0, 1,
+         0.5f, -0.25f,  0.5f,   1, 1, 0, 1,
+         0.5f,  0.25f,  0.5f,   1, 1, 0, 1,
+
+         // Top face
+         -0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
+          0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
+          0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
+          0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
+         -0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
+         -0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
+
+         // Bottom face
+         -0.5f, -0.25f, -0.5f,   0, 1, 1, 1,
+          0.5f, -0.25f, -0.5f,   0, 1, 1, 1,
+          0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
+          0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
+         -0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
+         -0.5f, -0.25f, -0.5f,   0, 1, 1, 1
     };
+
     unsigned int stride = (3 + 4) * sizeof(float);  //velicina jednog verteksa, 3 pozicije + 4 boje
     
     unsigned int VAO;   //vertex array object
@@ -99,7 +142,10 @@ int main(void)
     unsigned int modelLoc = glGetUniformLocation(unifiedShader, "uM");  //lokacija uniforme
     
     glm::mat4 view; //Matrica pogleda (kamere)
-    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // lookAt(Gdje je kamera, u sta kamera gleda, jedinicni vektor pozitivne Y ose svijeta  - ovo rotira kameru)
+    //view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // lookAt(Gdje je kamera, u sta kamera gleda, jedinicni vektor pozitivne Y ose svijeta  - ovo rotira kameru)
+    //view = glm::lookAt(glm::vec3(1.5f, 1.0f, 2.0f),  // kamera iz ugla
+    //    glm::vec3(0.0f, 0.0f, 0.0f),  // centar scene
+    //    glm::vec3(0.0f, 1.0f, 0.0f)); // Y je gore
     unsigned int viewLoc = glGetUniformLocation(unifiedShader, "uV");
     
     
@@ -155,23 +201,50 @@ int main(void)
             glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionO));
         }
         //Transformisanje trouglova
+        //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        //{
+        //    //model = glm::translate(model, glm::vec3(-0.01, 0.0, 0.0)); //Pomjeranje (Matrica transformacije, pomjeraj po XYZ)
+        //    model = glm::rotate(model, glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)); //Rotiranje (Matrica transformacije, ugao rotacije u radijanima, osa rotacije)
+        //    //model = glm::scale(model, glm::vec3(0.99, 1.0, 1.0)); //Skaliranje (Matrica transformacije, skaliranje po XYZ)
+        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //}
+        //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        //{
+        //    //model = glm::translate(model, glm::vec3(0.01, 0.0, 0.0));
+        //    model = glm::rotate(model, glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //    //model = glm::scale(model, glm::vec3(1.1, 1.0, 1.0));
+        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //}
+
+        // Obrada tastature WSAD
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            //model = glm::translate(model, glm::vec3(-0.01, 0.0, 0.0)); //Pomjeranje (Matrica transformacije, pomjeraj po XYZ)
-            model = glm::rotate(model, glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)); //Rotiranje (Matrica transformacije, ugao rotacije u radijanima, osa rotacije)
-            //model = glm::scale(model, glm::vec3(0.99, 1.0, 1.0)); //Skaliranje (Matrica transformacije, skaliranje po XYZ)
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        }
+            camAngle -= 0.02f;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            //model = glm::translate(model, glm::vec3(0.01, 0.0, 0.0));
-            model = glm::rotate(model, glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
-            //model = glm::scale(model, glm::vec3(1.1, 1.0, 1.0));
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        }
+            camAngle += 0.02f;
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            camHeight += 0.02f;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            camHeight -= 0.02f;
+
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+            radius -= 0.02f;
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+            radius += 0.02f;
+
+
+        // Ažuriranje pozicije kamere
+        float camX = sin(camAngle) * radius;
+        float camZ = cos(camAngle) * radius;
+
+        view = glm::lookAt(glm::vec3(camX, camHeight, camZ),
+            glm::vec3(0.0f, 0.0f, 0.0f),     // gleda u centar
+            glm::vec3(0.0f, 1.0f, 0.0f));    // Y je gore
+
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Osvjezavamo i Z bafer i bafer boje
-        glDrawArrays(GL_TRIANGLES, 0, 6);   //iscrtava 6 verteksa kao 2 trougla
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
