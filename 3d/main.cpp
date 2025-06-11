@@ -97,12 +97,12 @@ int main(void)
          0.5f,  0.25f,  0.5f,   1, 1, 0, 1,
 
          // Top face
-         -0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
-          0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
-          0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
-          0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
-         -0.5f,  0.25f,  0.5f,   1, 0, 1, 1,
-         -0.5f,  0.25f, -0.5f,   1, 0, 1, 1,
+         -0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
+          0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
+          0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
+          0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
+         -0.5f,  0.25f,  0.5f,   1, 0, 1, 0.5f,
+         -0.5f,  0.25f, -0.5f,   1, 0, 1, 0.5f,
 
          // Bottom face
          -0.5f, -0.25f, -0.5f,   0, 1, 1, 1,
@@ -112,6 +112,18 @@ int main(void)
          -0.5f, -0.25f,  0.5f,   0, 1, 1, 1,
          -0.5f, -0.25f, -0.5f,   0, 1, 1, 1
     };
+
+    float waterPlane[] = {
+    -0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
+     0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
+     0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
+     0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
+    -0.4f,  0.25f,  0.4f,   0.0f, 0.4f, 1.0f, 0.5f,
+    -0.4f,  0.25f, -0.4f,   0.0f, 0.4f, 1.0f, 0.5f
+    };
+
+
+
 
     unsigned int stride = (3 + 4) * sizeof(float);  //velicina jednog verteksa, 3 pozicije + 4 boje
     
@@ -123,6 +135,22 @@ int main(void)
     glGenBuffers(1, &VBO);  //dovoljan je 1 jer imamo 1 niz verteksa
     glBindBuffer(GL_ARRAY_BUFFER, VBO); //aktivira vbo
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  //salje podatke u memoriju gpu-a
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    unsigned int waterVAO, waterVBO;
+    glGenVertexArrays(1, &waterVAO);
+    glGenBuffers(1, &waterVBO);
+
+    glBindVertexArray(waterVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(waterPlane), waterPlane, GL_STATIC_DRAW);
+
+
+
 
     // pozicija (atribut 0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);  
@@ -163,6 +191,9 @@ int main(void)
 
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -243,8 +274,19 @@ int main(void)
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Osvjezavamo i Z bafer i bafer boje
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // prvo voda (providna)
+        glDepthMask(GL_FALSE);
+        glBindVertexArray(waterVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDepthMask(GL_TRUE);
+
+        // zatim kvadar (sada gornja stranica propušta svetlost)
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -255,6 +297,10 @@ int main(void)
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+
+    glDeleteVertexArrays(1, &waterVAO);
+    glDeleteBuffers(1, &waterVBO);
+
     glDeleteProgram(unifiedShader);
 
     glfwTerminate();
