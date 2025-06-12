@@ -380,6 +380,8 @@ int main(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    unsigned int useFixedColorLoc = glGetUniformLocation(unifiedShader, "uUseFixedColor");
+
     while (!glfwWindowShouldClose(window))
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -465,7 +467,7 @@ int main(void)
 
         
 
-
+        glUniform1i(useFixedColorLoc, GL_FALSE);    //da ne koristi fiksirane boje za sve
 
         // prvo voda 
         glBindVertexArray(waterVAO);
@@ -511,6 +513,8 @@ int main(void)
             cubeSpawnCooldown = 0.05f;  // nova svakih 0.05s
         }
 
+        glUniform1i(useFixedColorLoc, GL_TRUE); //fiksirana plava za kockice
+
         // Azuriranje i crtanje kockica
         for (int i = 0; i < cubes.size(); ++i) {
             // Ažuriraj poziciju po paraboli
@@ -543,6 +547,7 @@ int main(void)
         if (cubes.size() > 50)
             cubes.erase(cubes.begin());
 
+        glUniform1i(useFixedColorLoc, GL_FALSE);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
