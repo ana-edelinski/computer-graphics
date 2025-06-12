@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <thread>
+#include <chrono>
+
 
 #include <GL/glew.h> 
 #include <GLFW/glfw3.h>
@@ -14,6 +17,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
@@ -21,6 +25,15 @@ unsigned int createShader(const char* vsSource, const char* fsSource);
 float radius = 2.0f;       // udaljenost kamere od centra
 float camAngle = 0.0f;     // ugao u XZ ravni
 float camHeight = 0.0f;    // visina kamere (Y osa)
+
+struct FallingCube {
+    glm::vec3 position;
+    glm::vec3 velocity;
+    float rotation;
+};
+
+std::vector<FallingCube> cubes;
+float cubeSpawnCooldown = 0.5f; //0.3 brze
 
 
 int main(void)
@@ -305,10 +318,21 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    unsigned int animCubeVAO, animCubeVBO;
+    glGenVertexArrays(1, &animCubeVAO);
+    glGenBuffers(1, &animCubeVBO);
 
+    glBindVertexArray(animCubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, animCubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 
@@ -348,6 +372,7 @@ int main(void)
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //view
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionO));    //ortogonalna default
     glBindVertexArray(VAO); //aktivira vao
+
 
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
@@ -433,8 +458,14 @@ int main(void)
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        model = glm::mat4(1.0f);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        
+
+
 
         // prvo voda 
         glBindVertexArray(waterVAO);
@@ -456,9 +487,69 @@ int main(void)
         glBindVertexArray(pyramidVAO);
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
+        // === ANIMIRANE ISKAKUJUCE KOCKE ===
+
+        float deltaTime = 0.016f; // fiksni frame (~60 FPS)
+
+        // Dodavanje novih kockica iz vrha piramide
+        cubeSpawnCooldown -= deltaTime;
+        if (cubeSpawnCooldown <= 0.0f) {
+            FallingCube newCube;
+            newCube.position = glm::vec3(0.0f, 0.65f, 0.0f);
+
+            // Brzina: navise + u stranu (nasumicno)
+            newCube.velocity = glm::vec3(
+                (rand() % 100 - 50) / 350.0f,     // X: -0.143 do 0.143
+                0.55f + (rand() % 100) / 800.0f,  // Y: 0.55 do 0.675
+                (rand() % 100 - 50) / 350.0f      // Z: -0.143 do 0.143
+            );
+
+
+
+            newCube.rotation = 0.0f;
+            cubes.push_back(newCube);
+            cubeSpawnCooldown = 0.05f;  // nova svakih 0.05s
+        }
+
+        // Azuriranje i crtanje kockica
+        for (int i = 0; i < cubes.size(); ++i) {
+            // Ažuriraj poziciju po paraboli
+            cubes[i].position += cubes[i].velocity * deltaTime;
+
+            // Gravitacija
+            cubes[i].velocity.y -= 1.0f * deltaTime;
+
+            // Ogranici da ne padnu ispod vode
+            if (cubes[i].position.y < 0.251f) {
+                cubes[i].position.y = 0.251f;
+                cubes[i].velocity = glm::vec3(0.0f); // stop kretanja
+            }
+
+            // Rotacija
+            cubes[i].rotation += glm::radians(90.0f) * deltaTime;
+
+            // Model matrica
+            glm::mat4 cubeModel = glm::mat4(1.0f);
+            cubeModel = glm::translate(cubeModel, cubes[i].position);
+            cubeModel = glm::rotate(cubeModel, cubes[i].rotation, glm::vec3(1.0f, 1.0f, 0.0f));
+            cubeModel = glm::scale(cubeModel, glm::vec3(0.07f));  // male kocke
+
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(cubeModel));
+            glBindVertexArray(VAO);  // isti kao za bazu
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        // Ogranici broj kocki u memoriji
+        if (cubes.size() > 50)
+            cubes.erase(cubes.begin());
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
