@@ -401,10 +401,7 @@ int main(void)
     //    glm::vec3(0.0f, 1.0f, 0.0f)); // Y je gore
     unsigned int viewLoc = glGetUniformLocation(unifiedShader, "uV");
     
-    
     glm::mat4 projectionP = glm::perspective(glm::radians(90.0f), (float)wWidth / (float)wHeight, 0.1f, 100.0f); //Matrica perspektivne projekcije (FOV, Aspect Ratio, prednja ravan, zadnja ravan)
-    float aspect = (float)wWidth / (float)wHeight; // 800 / 600 = 1.333f - jer prozor vise nije kvadratni
-    glm::mat4 projectionO = glm::ortho(-aspect, aspect, -1.0f, 1.0f, 0.1f, 100.0f);
     unsigned int projectionLoc = glGetUniformLocation(unifiedShader, "uP");
 
 
@@ -412,15 +409,12 @@ int main(void)
     glUseProgram(unifiedShader); //Slanje default vrijednosti uniformi
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); //(Adresa matrice, broj matrica koje saljemo, da li treba da se transponuju, pokazivac do matrica)
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //view
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionO));    //ortogonalna default
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));    //ortogonalna default
 
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    unsigned int useFixedColorLoc = glGetUniformLocation(unifiedShader, "uUseFixedColor");
+    glEnable(GL_DEPTH_TEST);
 
     unsigned int stoneTexture;
     glGenTextures(1, &stoneTexture);
@@ -470,32 +464,7 @@ int main(void)
             glDisable(GL_CULL_FACE);
         }
 
-        //Mijenjanje projekcija
-        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-        {
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));
-        }
-        if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        {
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionO));
-        }
-        //Transformisanje trouglova
-        //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        //{
-        //    //model = glm::translate(model, glm::vec3(-0.01, 0.0, 0.0)); //Pomjeranje (Matrica transformacije, pomjeraj po XYZ)
-        //    model = glm::rotate(model, glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)); //Rotiranje (Matrica transformacije, ugao rotacije u radijanima, osa rotacije)
-        //    //model = glm::scale(model, glm::vec3(0.99, 1.0, 1.0)); //Skaliranje (Matrica transformacije, skaliranje po XYZ)
-        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        //}
-        //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        //{
-        //    //model = glm::translate(model, glm::vec3(0.01, 0.0, 0.0));
-        //    model = glm::rotate(model, glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
-        //    //model = glm::scale(model, glm::vec3(1.1, 1.0, 1.0));
-        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        //}
-
-        // Obrada tastature WSAD
+        // Obrada tastature 
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             camAngle -= 0.02f;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -505,11 +474,10 @@ int main(void)
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             camHeight -= 0.02f;
 
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_KP_ADD) || glfwGetKey(window, GLFW_KEY_E)  == GLFW_PRESS)
             radius -= 0.02f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             radius += 0.02f;
-
 
         // Ažuriranje pozicije kamere
         float camX = sin(camAngle) * radius;
@@ -535,7 +503,7 @@ int main(void)
         glUseProgram(textureShader);
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(projectionO));
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(projectionP));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, stoneTexture);
@@ -557,7 +525,6 @@ int main(void)
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
         // kockice koje iskacu
-
         float deltaTime = 0.016f; // fiksni frame (~60 FPS)
         glUseProgram(unifiedShader);
 
