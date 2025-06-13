@@ -1,5 +1,5 @@
-// Autor: Nedeljko Tesanovic
-// Opis: Testiranje dubine, Uklanjanje lica, Transformacije, Prostori i Projekcije
+// Autor: Ana Edelinski RA 165/2021
+// Specifikacija 21: Fontana
 
 #define _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_IMPLEMENTATION
@@ -51,9 +51,9 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  //koristi core profil
 
     GLFWwindow* window;
-    unsigned int wWidth = 500;
-    unsigned int wHeight = 500;
-    const char wTitle[] = "[Generic Title]";
+    unsigned int wWidth = 800;
+    unsigned int wHeight = 800;
+    const char wTitle[] = "Fontana";
     window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL, NULL);
     
     if (window == NULL)
