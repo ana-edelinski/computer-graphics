@@ -177,13 +177,14 @@ int main(void)
     };
 
     float groundPlane[] = {
-        // pozicija            // boja (sivkasto-zelena RGBA)
-        -5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-         5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-         5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-         5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-        -5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-        -5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        // pozicija               // boja (sivkasto-zelena RGBA)
+        -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+
+         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        -5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
     };
 
     float topFrameVertices[] = {
