@@ -24,8 +24,8 @@ unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
 
 float radius = 2.0f;       // udaljenost kamere od centra
-float camAngle = 0.0f;     // ugao u XZ ravni
-float camHeight = 0.0f;    // visina kamere (Y osa)
+float camAngle = glm::radians(135.0f);    // ugao u XZ ravni
+float camHeight = 1.5f;    // visina kamere (Y osa)
 
 struct FallingCube {
     glm::vec3 position;
