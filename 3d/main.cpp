@@ -52,7 +52,7 @@ int main(void)
 
     GLFWwindow* window;
     unsigned int wWidth = 800;
-    unsigned int wHeight = 800;
+    unsigned int wHeight = 600;
     const char wTitle[] = "Fontana";
     window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL, NULL);
     
@@ -403,7 +403,8 @@ int main(void)
     
     
     glm::mat4 projectionP = glm::perspective(glm::radians(90.0f), (float)wWidth / (float)wHeight, 0.1f, 100.0f); //Matrica perspektivne projekcije (FOV, Aspect Ratio, prednja ravan, zadnja ravan)
-    glm::mat4 projectionO = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f); //Matrica ortogonalne projekcije (Lijeva, desna, donja, gornja, prednja i zadnja ravan)
+    float aspect = (float)wWidth / (float)wHeight; // 800 / 600 = 1.333f - jer prozor vise nije kvadratni
+    glm::mat4 projectionO = glm::ortho(-aspect, aspect, -1.0f, 1.0f, 0.1f, 100.0f);
     unsigned int projectionLoc = glGetUniformLocation(unifiedShader, "uP");
 
 
