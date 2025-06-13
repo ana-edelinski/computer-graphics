@@ -129,6 +129,16 @@ int main(void)
         -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f
     };
 
+    float groundPlane[] = {
+        // pozicija            // boja (sivkasto-zelena RGBA)
+        -5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        -5.0f, 0.0f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        -5.0f, 0.0f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+    };
+
     float topFrameVertices[] = {
         // Gornja traka
         -0.5f, 0.25f, -0.5f,   0.0f, 0.0f,
@@ -384,9 +394,25 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // inCol
     glEnableVertexAttribArray(1);
 
-    // zavrsni unbind
+    // tlo
+    unsigned int groundVAO, groundVBO;
+    glGenVertexArrays(1, &groundVAO);
+    glGenBuffers(1, &groundVBO);
+
+    glBindVertexArray(groundVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(groundPlane), groundPlane, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0); // pozicija
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // boja
+    glEnableVertexAttribArray(1);
+
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // zavrsni unbind
+    //glBindVertexArray(0);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++            UNIFORME            +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -493,6 +519,14 @@ int main(void)
 
         model = glm::mat4(1.0f);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        glUseProgram(unifiedShader);
+        model = glm::mat4(1.0f);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        glBindVertexArray(groundVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
 
         // voda 
         glUseProgram(unifiedShader);
@@ -603,6 +637,9 @@ int main(void)
 
     glDeleteVertexArrays(1, &animCubeVAO);
     glDeleteBuffers(1, &animCubeVBO);
+
+    glDeleteVertexArrays(1, &groundVAO);
+    glDeleteBuffers(1, &groundVBO);
 
     glDeleteTextures(1, &stoneTexture);
 
