@@ -10,7 +10,6 @@
 #include <thread>
 #include <chrono>
 
-
 #include <GL/glew.h> 
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
@@ -35,7 +34,7 @@ struct FallingCube {
 };
 
 std::vector<FallingCube> cubes;
-float cubeSpawnCooldown = 0.5f; //0.3 brze
+float cubeSpawnCooldown = 0.5f; 
 
 
 int main(void)
@@ -78,7 +77,7 @@ int main(void)
     unsigned int unifiedShader = createShader("basic.vert", "basic.frag");
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
 
-    float vertices[] = {
+    float cube[] = {
         //  Pozicija            // UV
     // Front
     -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
@@ -245,34 +244,67 @@ int main(void)
         -0.05f, 0.551f, -0.05f, 1.0f, 0.0f
     };
 
+    float animatedCubes[] = {
+        // Pozicija           // Boja (svetla plava, RGBA)
+        // Front
+        -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
+        // Back
+        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
+        // Left
+        -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
+        // Right
+         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+
+         // Bottom
+         -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+
+         // Top
+         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f
+    };
 
     unsigned int stride = (3 + 4) * sizeof(float);  //velicina jednog verteksa, 3 pozicije + 4 boje
-    
-    // obicni vao i vbo su za animirane kockice
-    unsigned int VAO;   //vertex array object
-    glGenVertexArrays(1, &VAO); //generise jedan vao - crtamo jedan objekat
-    glBindVertexArray(VAO); //aktivira vao
 
-    unsigned int VBO;   //vertex buffer object, cuva vrednosti verteksa (pozicije, boje...)
-    glGenBuffers(1, &VBO);  //dovoljan je 1 jer imamo 1 niz verteksa
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); //aktivira vbo
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  //salje podatke u memoriju gpu-a
+    // osnova fontane (kvadar)
+    unsigned int cubeVAO, cubeVBO;
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    unsigned int texturedVAO, texturedVBO;
-    glGenVertexArrays(1, &texturedVAO);
-    glGenBuffers(1, &texturedVBO);
-
-    glBindVertexArray(texturedVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, texturedVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);           // pozicija
     glEnableVertexAttribArray(0);
@@ -281,7 +313,7 @@ int main(void)
 
     glBindVertexArray(0);
 
-
+    // voda
     unsigned int waterVAO, waterVBO;
     glGenVertexArrays(1, &waterVAO);
     glGenBuffers(1, &waterVBO);
@@ -295,6 +327,7 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    // gornji deo osnove, okvir
     unsigned int frameVAO, frameVBO;
     glGenVertexArrays(1, &frameVAO);
     glGenBuffers(1, &frameVBO);
@@ -308,6 +341,7 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
+    // stub
     unsigned int pillarVAO, pillarVBO;
     glGenVertexArrays(1, &pillarVAO);
     glGenBuffers(1, &pillarVBO);
@@ -321,6 +355,7 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
+    // piramida na vrhu stuba
     unsigned int pyramidVAO, pyramidVBO;
     glGenVertexArrays(1, &pyramidVAO);
     glGenBuffers(1, &pyramidVBO);
@@ -334,34 +369,24 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
+    // kockice koje iskacu
     unsigned int animCubeVAO, animCubeVBO;
     glGenVertexArrays(1, &animCubeVAO);
     glGenBuffers(1, &animCubeVBO);
 
     glBindVertexArray(animCubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, animCubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(animatedCubes), animatedCubes, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0); // inPos
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // inCol
     glEnableVertexAttribArray(1);
 
+    // zavrsni unbind
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-
-    // pozicija (atribut 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);  
-    glEnableVertexAttribArray(0);
-
-    // boja (atribut 1)
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   //odvezuje vbo
-    glBindVertexArray(0);   //odvezuje vao
     
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++            UNIFORME            +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -387,8 +412,6 @@ int main(void)
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); //(Adresa matrice, broj matrica koje saljemo, da li treba da se transponuju, pokazivac do matrica)
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //view
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionO));    //ortogonalna default
-    glBindVertexArray(VAO); //aktivira vao
-
 
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
@@ -502,18 +525,12 @@ int main(void)
         model = glm::mat4(1.0f);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        
-
-        glUniform1i(useFixedColorLoc, GL_FALSE);    //da ne koristi fiksirane boje za sve
-
-        // prvo voda 
+        // voda 
         glUseProgram(unifiedShader);
         glBindVertexArray(waterVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        // zatim kvadar 
-        /*glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);*/
+        // kvadar - osnova fontane
         glUseProgram(textureShader);
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(view));
@@ -523,14 +540,14 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, stoneTexture);
         glUniform1i(glGetUniformLocation(textureShader, "uTex"), 0);
 
-        glBindVertexArray(texturedVAO);
+        glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // gornji okvir
         glBindVertexArray(frameVAO);
         glDrawArrays(GL_TRIANGLES, 0, 24);
 
-        //stub
+        // stub
         glBindVertexArray(pillarVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -538,7 +555,7 @@ int main(void)
         glBindVertexArray(pyramidVAO);
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
-        // === ANIMIRANE ISKAKUJUCE KOCKE ===
+        // kockice koje iskacu
 
         float deltaTime = 0.016f; // fiksni frame (~60 FPS)
         glUseProgram(unifiedShader);
@@ -556,14 +573,10 @@ int main(void)
                 (rand() % 100 - 50) / 350.0f      // Z: -0.143 do 0.143
             );
 
-
-
             newCube.rotation = 0.0f;
             cubes.push_back(newCube);
             cubeSpawnCooldown = 0.05f;  // nova svakih 0.05s
         }
-
-        glUniform1i(useFixedColorLoc, GL_TRUE); //fiksirana plava za kockice
 
         // Azuriranje i crtanje kockica
         for (int i = 0; i < cubes.size(); ++i) {
@@ -589,7 +602,7 @@ int main(void)
             cubeModel = glm::scale(cubeModel, glm::vec3(0.07f));  // male kocke
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(cubeModel));
-            glBindVertexArray(VAO);  // isti kao za bazu
+            glBindVertexArray(animCubeVAO);  // isti kao za bazu
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
@@ -597,24 +610,19 @@ int main(void)
         if (cubes.size() > 50)
             cubes.erase(cubes.begin());
 
-        glUniform1i(useFixedColorLoc, GL_FALSE);
-
         glfwSwapBuffers(window);
         glfwPollEvents();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-
-
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
-
     glDeleteVertexArrays(1, &waterVAO);
     glDeleteBuffers(1, &waterVBO);
+
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteBuffers(1, &cubeVBO);
 
     glDeleteVertexArrays(1, &frameVAO);
     glDeleteBuffers(1, &frameVBO);
@@ -625,8 +633,13 @@ int main(void)
     glDeleteVertexArrays(1, &pyramidVAO);
     glDeleteBuffers(1, &pyramidVBO);
 
+    glDeleteVertexArrays(1, &animCubeVAO);
+    glDeleteBuffers(1, &animCubeVBO);
+
+    glDeleteTextures(1, &stoneTexture);
 
     glDeleteProgram(unifiedShader);
+    glDeleteProgram(textureShader);
 
     glfwTerminate();
     return 0;
