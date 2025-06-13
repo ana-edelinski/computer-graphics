@@ -36,5 +36,11 @@
     <None Include="texture.frag">
       <Filter>Source Files\Shader Files</Filter>
     </None>
+    <None Include="skybox.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

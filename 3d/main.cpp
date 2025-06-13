@@ -36,6 +36,49 @@ struct FallingCube {
 std::vector<FallingCube> cubes;
 float cubeSpawnCooldown = 0.5f; 
 
+float skyboxVertices[] = {
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
 
 int main(void)
 {
@@ -76,6 +119,10 @@ int main(void)
 
     unsigned int unifiedShader = createShader("basic.vert", "basic.frag");
     unsigned int textureShader = createShader("texture.vert", "texture.frag");
+    
+    unsigned int skyboxShader = createShader("skybox.vert", "skybox.frag");
+    int skyboxViewLoc = glGetUniformLocation(skyboxShader, "uV");
+    int skyboxProjLoc = glGetUniformLocation(skyboxShader, "uP");
 
     float cube[] = {
         //  Pozicija            // UV
@@ -408,6 +455,20 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // boja
     glEnableVertexAttribArray(1);
 
+    //glBindVertexArray(0);
+
+    // nebo
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
     glBindVertexArray(0);
 
     // zavrsni unbind
@@ -517,9 +578,23 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        model = glm::mat4(1.0f);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // nebo
+        glDepthFunc(GL_LEQUAL);  
+        glDepthMask(GL_FALSE);
 
+        glUseProgram(skyboxShader);
+        glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // bez translacije
+        glUniformMatrix4fv(skyboxViewLoc, 1, GL_FALSE, glm::value_ptr(skyboxView));
+        glUniformMatrix4fv(skyboxProjLoc, 1, GL_FALSE, glm::value_ptr(projectionP));
+
+        glBindVertexArray(skyboxVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+
+        glDepthMask(GL_TRUE);   // <<< obavezno
+        glDepthFunc(GL_LESS);   // <<< obavezno
+
+        // tlo
         glUseProgram(unifiedShader);
         model = glm::mat4(1.0f);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -641,10 +716,14 @@ int main(void)
     glDeleteVertexArrays(1, &groundVAO);
     glDeleteBuffers(1, &groundVBO);
 
+    glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteBuffers(1, &skyboxVBO);
+
     glDeleteTextures(1, &stoneTexture);
 
     glDeleteProgram(unifiedShader);
     glDeleteProgram(textureShader);
+    glDeleteProgram(skyboxShader);
 
     glfwTerminate();
     return 0;
