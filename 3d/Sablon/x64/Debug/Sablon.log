@@ -1,2 +1,9 @@
 ﻿  main.cpp
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(702,30): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(725,41): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(725,41): warning C4244:         with
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(725,41): warning C4244:         [
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(725,41): warning C4244:             T=float
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(725,41): warning C4244:         ]
+D:\Fakultet\7\grafika\projekat\computer-graphics\3d\main.cpp(734,54): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
   Sablon.vcxproj -> D:\Fakultet\7\grafika\projekat\computer-graphics\3d\x64\Debug\Sablon.exe

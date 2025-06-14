@@ -124,6 +124,11 @@ int main(void)
     int skyboxViewLoc = glGetUniformLocation(skyboxShader, "uV");
     int skyboxProjLoc = glGetUniformLocation(skyboxShader, "uP");
 
+    const int TARGET_FPS = 60;
+    const double TARGET_FRAME_TIME = 1.0 / TARGET_FPS;
+
+    double previousTime = glfwGetTime();    //zapamti kad sam krenula da crtam prvi frejm
+
     float cube[] = {
         //  Pozicija            // UV
     // Front
@@ -573,6 +578,11 @@ int main(void)
 
     while (!glfwWindowShouldClose(window))
     {
+        //u svakom frejmu while petlja
+        double currentTime = glfwGetTime(); //meri novo trenutno vreme
+        double deltaTime = currentTime - previousTime;  //racuna koliko je proslo od prvog frejma
+        previousTime = currentTime; //azurira previous time => pamti kada je poceo ovaj frejm da bi sledeci imao ispravnu osnovu
+
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             glfwSetWindowShouldClose(window, GL_TRUE);  //esc zatvara prozor
@@ -685,7 +695,7 @@ int main(void)
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
         // kockice koje iskacu
-        float deltaTime = 0.016f; // fiksni frame (~60 FPS)
+        float deltaTimef = static_cast<float>(deltaTime);
         glUseProgram(unifiedShader);
 
         // Dodavanje novih kockica iz vrha piramide
@@ -709,7 +719,7 @@ int main(void)
         // Azuriranje i crtanje kockica
         for (int i = 0; i < cubes.size(); ++i) {
             // Ažuriraj poziciju po paraboli
-            cubes[i].position += cubes[i].velocity * deltaTime;
+            cubes[i].position += cubes[i].velocity * deltaTimef;
 
             // Gravitacija
             cubes[i].velocity.y -= 1.0f * deltaTime;
@@ -766,7 +776,15 @@ int main(void)
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        double frameEndTime = glfwGetTime();    //meri trenutno vreme na kraju frejma
+        double frameDuration = frameEndTime - currentTime;  //koliko je ukupno trajao ovaj frejm
+
+        if (frameDuration < TARGET_FRAME_TIME) {    //ako je bio duzi od 1.0/60 ~ 16.67ms
+            std::this_thread::sleep_for(
+                std::chrono::duration<double>(TARGET_FRAME_TIME - frameDuration)    //usporava
+            );
+        }
+
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
