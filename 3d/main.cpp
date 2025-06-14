@@ -353,6 +353,15 @@ int main(void)
          -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f
     };
 
+    float signatureVertices[] =
+    {
+        //  X       Y      U     V
+        -0.1f,  0.9f,   0.0f, 0.0f,
+         0.4f,  0.9f,   1.0f, 0.0f,
+        -0.1f,  1.0f,   0.0f, 1.0f,
+         0.4f,  1.0f,   1.0f, 1.0f
+    };
+
     unsigned int stride = (3 + 4) * sizeof(float);  //velicina jednog verteksa, 3 pozicije + 4 boje
 
     // osnova fontane (kvadar)
@@ -470,10 +479,24 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
+
+    unsigned int signatureVAO, signatureVBO;
+    glGenVertexArrays(1, &signatureVAO);
+    glGenBuffers(1, &signatureVBO);
+
+    glBindVertexArray(signatureVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, signatureVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(signatureVertices), signatureVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);           // pozicija
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
+    glEnableVertexAttribArray(1);
+
 
     // zavrsni unbind
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 
@@ -523,6 +546,29 @@ int main(void)
         std::cout << "Neuspesno ucitavanje teksture" << std::endl;
     }
     stbi_image_free(data);
+
+    unsigned int signatureTexture;
+    glGenTextures(1, &signatureTexture);
+    glBindTexture(GL_TEXTURE_2D, signatureTexture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int sigWidth, sigHeight, sigChannels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* sigData = stbi_load("resources/potpis.png", &sigWidth, &sigHeight, &sigChannels, STBI_rgb_alpha);
+    if (sigData)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sigWidth, sigHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, sigData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Greska pri ucitavanju potpisa!" << std::endl;
+    }
+    stbi_image_free(sigData);
 
 
     while (!glfwWindowShouldClose(window))
@@ -606,6 +652,10 @@ int main(void)
 
         // voda 
         glUseProgram(unifiedShader);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));
+
         glBindVertexArray(waterVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -688,6 +738,31 @@ int main(void)
         if (cubes.size() > 50)
             cubes.erase(cubes.begin());
 
+        // Potpis - 2D HUD
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glUseProgram(textureShader);
+
+        glm::mat4 orthoProj = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f); // leva, desna, donja, gornja
+        glm::mat4 identity = glm::mat4(1.0f);
+
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(identity));
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(identity));
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(orthoProj));
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, signatureTexture);
+        glUniform1i(glGetUniformLocation(textureShader, "uTex"), 0);
+
+        glBindVertexArray(signatureVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Vrati dubinu za sledeci frejm
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 
@@ -720,7 +795,7 @@ int main(void)
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
 
-    glDeleteTextures(1, &stoneTexture);
+    glDeleteTextures(1, &stoneTexture); 
 
     glDeleteProgram(unifiedShader);
     glDeleteProgram(textureShader);
