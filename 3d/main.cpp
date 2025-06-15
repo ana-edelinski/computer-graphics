@@ -130,7 +130,7 @@ int main(void)
     double previousTime = glfwGetTime();   
 
     float cube[] = {
-        // Front
+        // Front 
         -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
          0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
          0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
@@ -138,98 +138,73 @@ int main(void)
         -0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
         -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
 
-        // Back
-        -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+        // Back 
          0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-         0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-         0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-        -0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
         -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+        -0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+        -0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+         0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+         0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
 
-        // Left
-        -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
-        -0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-        -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-        -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-        -0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-        -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+         // Left 
+         -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
+         -0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+         -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+         -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+         -0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+         -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
 
-        // Right
-         0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
-         0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
-         0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
-         0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
-         0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
-         0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
+         // Right 
+          0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+          0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+          0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+          0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+          0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
+          0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
 
-         // Bottom
-         -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
-          0.5f, -0.25f, -0.5f,   1.0f, 1.0f,
-          0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-          0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-         -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
-         -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
+          // Bottom
+          -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
+           0.5f, -0.25f, -0.5f,   1.0f, 1.0f,
+           0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+           0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+          -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+          -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
+
+          // Top 
+          -0.5f,  0.25f,  0.5f,   0.0f, 0.0f,
+           0.5f,  0.25f,  0.5f,   1.0f, 0.0f,
+           0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+           0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+          -0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+          -0.5f,  0.25f,  0.5f,   0.0f, 0.0f
     };
+
+
 
     float waterPlane[] = {
         -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
-         0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
-         0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
-         0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
         -0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
-        -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f
+         0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+
+          0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+          0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
+         -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f
     };
+
+
 
     float groundPlane[] = {
         -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-         5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-
-         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
         -5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-        -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
-    };
+         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
 
-    float topFrameVertices[] = {
-        // Gornja traka
-        -0.5f, 0.25f, -0.5f,   0.0f, 0.0f,
-         0.5f, 0.25f, -0.5f,   1.0f, 0.0f,
-         0.5f, 0.25f, -0.3f,   1.0f, 1.0f,
-
-         0.5f, 0.25f, -0.3f,   1.0f, 1.0f,
-        -0.5f, 0.25f, -0.3f,   0.0f, 1.0f,
-        -0.5f, 0.25f, -0.5f,   0.0f, 0.0f,
-
-        // Donja traka
-        -0.5f, 0.25f, 0.3f,    0.0f, 0.0f,
-         0.5f, 0.25f, 0.3f,    1.0f, 0.0f,
-         0.5f, 0.25f, 0.5f,    1.0f, 1.0f,
-
-         0.5f, 0.25f, 0.5f,    1.0f, 1.0f,
-        -0.5f, 0.25f, 0.5f,    0.0f, 1.0f,
-        -0.5f, 0.25f, 0.3f,    0.0f, 0.0f,
-
-        // Leva traka
-        -0.5f, 0.25f, -0.3f,   0.0f, 0.0f,
-        -0.3f, 0.25f, -0.3f,   1.0f, 0.0f,
-        -0.3f, 0.25f,  0.3f,   1.0f, 1.0f,
-
-        -0.3f, 0.25f,  0.3f,   1.0f, 1.0f,
-        -0.5f, 0.25f,  0.3f,   0.0f, 1.0f,
-        -0.5f, 0.25f, -0.3f,   0.0f, 0.0f,
-
-        // Desna traka
-         0.3f, 0.25f, -0.3f,   0.0f, 0.0f,
-         0.5f, 0.25f, -0.3f,   1.0f, 0.0f,
-         0.5f, 0.25f,  0.3f,   1.0f, 1.0f,
-
-         0.5f, 0.25f,  0.3f,   1.0f, 1.0f,
-         0.3f, 0.25f,  0.3f,   0.0f, 1.0f,
-         0.3f, 0.25f, -0.3f,   0.0f, 0.0f
+         5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+         5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
+        -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f
     };
 
     float pillarVertices[] = {
-        // Front
+        // Front 
         -0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
          0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
          0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
@@ -237,73 +212,77 @@ int main(void)
         -0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
         -0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
 
-        // Back
-        -0.05f, 0.251f, -0.05f,  1.0f, 0.0f,
+        // Back 
          0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
-         0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
-         0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
-        -0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
         -0.05f, 0.251f, -0.05f,  1.0f, 0.0f,
+        -0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
+        -0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
+         0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
+         0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
 
-        // Left
-        -0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
-        -0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
-        -0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
-        -0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
-        -0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
-        -0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
-
-        // Right
-         0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
-         0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
-         0.05f, 0.251f, -0.05f,  1.0f, 0.0f,
-         0.05f, 0.251f, -0.05f,  1.0f, 0.0f,
-         0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
-         0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
-
-         // Top
+         // Left 
+         -0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
+         -0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
+         -0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
+         -0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
          -0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
+         -0.05f, 0.251f, -0.05f,  0.0f, 0.0f,
+
+         // Right 
+          0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
+          0.05f, 0.251f, -0.05f,  1.0f, 0.0f,
           0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
-          0.05f, 0.551f,  0.05f,  1.0f, 0.0f,
-          0.05f, 0.551f,  0.05f,  1.0f, 0.0f,
-         -0.05f, 0.551f,  0.05f,  0.0f, 0.0f,
-         -0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
+          0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
+          0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
+          0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
 
-         // Bottom
-         -0.05f, 0.251f, -0.05f,  0.0f, 1.0f,
-          0.05f, 0.251f, -0.05f,  1.0f, 1.0f,
-          0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
-          0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
-         -0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
-         -0.05f, 0.251f, -0.05f,  0.0f, 1.0f
+          // Bottom 
+          -0.05f, 0.251f, -0.05f,  0.0f, 1.0f,
+           0.05f, 0.251f, -0.05f,  1.0f, 1.0f,
+           0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
+           0.05f, 0.251f,  0.05f,  1.0f, 0.0f,
+          -0.05f, 0.251f,  0.05f,  0.0f, 0.0f,
+          -0.05f, 0.251f, -0.05f,  0.0f, 1.0f,
+
+          // Top 
+          -0.05f, 0.551f,  0.05f,  0.0f, 0.0f,
+           0.05f, 0.551f,  0.05f,  1.0f, 0.0f,
+           0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
+           0.05f, 0.551f, -0.05f,  1.0f, 1.0f,
+          -0.05f, 0.551f, -0.05f,  0.0f, 1.0f,
+          -0.05f, 0.551f,  0.05f,  0.0f, 0.0f
     };
 
     float pyramidVertices[] = {
-        // Baza (kvadrat)
-        -0.05f, 0.551f, -0.05f, 0.0f, 0.0f,
-         0.05f, 0.551f, -0.05f, 1.0f, 0.0f,
-         0.05f, 0.551f,  0.05f, 1.0f, 1.0f,
-         0.05f, 0.551f,  0.05f, 1.0f, 1.0f,
-        -0.05f, 0.551f,  0.05f, 0.0f, 1.0f,
-        -0.05f, 0.551f, -0.05f, 0.0f, 0.0f,
+        // Baza (kvadrat) 
+        -0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
+         0.05f, 0.551f,  0.05f,  1.0f, 1.0f,
+         0.05f, 0.551f, -0.05f,  1.0f, 0.0f,
+         0.05f, 0.551f, -0.05f,  1.0f, 0.0f,
+        -0.05f, 0.551f, -0.05f,  0.0f, 0.0f,
+        -0.05f, 0.551f,  0.05f,  0.0f, 1.0f,
 
-        // Strane (trouglovi)
-        0.0f, 0.65f, 0.0f,      0.5f, 1.0f,
-        -0.05f, 0.551f, -0.05f, 0.0f, 0.0f,
-         0.05f, 0.551f, -0.05f, 1.0f, 0.0f,
+        // Strana 1 (pozadi)
+         0.0f, 0.65f, 0.0f,       0.5f, 1.0f,
+         0.05f, 0.551f, -0.05f,   1.0f, 0.0f,
+        -0.05f, 0.551f, -0.05f,   0.0f, 0.0f,
 
-        0.0f, 0.65f, 0.0f,      0.5f, 1.0f,
-         0.05f, 0.551f, -0.05f, 0.0f, 0.0f,
-         0.05f, 0.551f,  0.05f, 1.0f, 0.0f,
+        // Strana 2 (desno)
+         0.0f, 0.65f, 0.0f,       0.5f, 1.0f,
+         0.05f, 0.551f,  0.05f,   1.0f, 0.0f,
+         0.05f, 0.551f, -0.05f,   0.0f, 0.0f,
 
-        0.0f, 0.65f, 0.0f,      0.5f, 1.0f,
-         0.05f, 0.551f,  0.05f, 0.0f, 0.0f,
-        -0.05f, 0.551f,  0.05f, 1.0f, 0.0f,
+         // Strana 3 (ispred)
+          0.0f, 0.65f, 0.0f,       0.5f, 1.0f,
+         -0.05f, 0.551f,  0.05f,   0.0f, 0.0f,
+          0.05f, 0.551f,  0.05f,   1.0f, 0.0f,
 
-        0.0f, 0.65f, 0.0f,      0.5f, 1.0f,
-        -0.05f, 0.551f,  0.05f, 0.0f, 0.0f,
-        -0.05f, 0.551f, -0.05f, 1.0f, 0.0f
+          // Strana 4 (levo)
+           0.0f, 0.65f, 0.0f,       0.5f, 1.0f,
+          -0.05f, 0.551f, -0.05f,   0.0f, 0.0f,
+          -0.05f, 0.551f,  0.05f,   1.0f, 0.0f
     };
+
 
     float animatedCubes[] = {
         // Front
@@ -314,45 +293,45 @@ int main(void)
         -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
         -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
-        // Back
-        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        // Back 
          0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-
-        // Left
-        -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-
-        // Right
-         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
          0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
          0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
-         // Bottom
+         // Left 
          -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-          0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
          -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
          -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
 
-         // Top
-         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+         // Right 
+          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
           0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
           0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-          0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
-         -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f
+          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+
+          // Bottom 
+          -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          -0.5f, -0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+
+          // Top 
+          -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+           0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          -0.5f,  0.5f, -0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
+          -0.5f,  0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f
     };
 
     float signatureVertices[] =
@@ -394,22 +373,6 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    // gornji deo osnove, okvir
-    unsigned int frameVAO, frameVBO;
-    glGenVertexArrays(1, &frameVAO);
-    glGenBuffers(1, &frameVBO);
-
-    glBindVertexArray(frameVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, frameVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(topFrameVertices), topFrameVertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // pozicija
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
@@ -527,7 +490,8 @@ int main(void)
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
 
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);    //ukljucen depth test
+    glEnable(GL_CULL_FACE);     //ukljucen face cull
 
     // ucitavanje tekstura
     unsigned int stoneTexture;
@@ -658,11 +622,27 @@ int main(void)
         glBindVertexArray(groundVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
+        // TEXTURE SHADER
+        glUseProgram(textureShader);
+
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(projectionP));
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, stoneTexture);
+        glUniform1i(glGetUniformLocation(textureShader, "uTex"), 0);
+
+        // osnova fontane (kvadar)
+        model = glm::mat4(1.0f); // podrazumevana transformacija
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         // voda 
+        glUseProgram(unifiedShader);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
         glBindVertexArray(waterVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
 
         // kockice koje se rotiraju i padaju u vodu
         float deltaTimef = static_cast<float>(deltaTime);
@@ -673,14 +653,14 @@ int main(void)
             newCube.position = glm::vec3(0.0f, 0.65f, 0.0f);
 
             newCube.velocity = glm::vec3(
-                (rand() % 100 - 50) / 350.0f,    
-                0.55f + (rand() % 100) / 800.0f,  
-                (rand() % 100 - 50) / 350.0f      
+                (rand() % 100 - 50) / 350.0f,
+                0.55f + (rand() % 100) / 800.0f,
+                (rand() % 100 - 50) / 350.0f
             );
 
             newCube.rotation = 0.0f;
             cubes.push_back(newCube);
-            cubeSpawnCooldown = 0.05f;  
+            cubeSpawnCooldown = 0.05f;
         }
 
         for (int i = 0; i < cubes.size(); ++i) {
@@ -690,7 +670,7 @@ int main(void)
 
             if (cubes[i].position.y < 0.251f) {
                 cubes[i].position.y = 0.251f;
-                cubes[i].velocity = glm::vec3(0.0f); 
+                cubes[i].velocity = glm::vec3(0.0f);
             }
 
             cubes[i].rotation += glm::radians(90.0f) * deltaTime;
@@ -708,27 +688,8 @@ int main(void)
         if (cubes.size() > 50)
             cubes.erase(cubes.begin());
 
-        // TEXTURE SHADER ZA FONTANU
-        glUseProgram(textureShader);
-
-        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(projectionP));
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, stoneTexture);
-        glUniform1i(glGetUniformLocation(textureShader, "uTex"), 0);
-
-        // osnova (kvadar)
-        model = glm::mat4(1.0f); // podrazumevana transformacija
-        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
-        glBindVertexArray(cubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // gornji okvir
-        glBindVertexArray(frameVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 24);
-
         // stub
+        glUseProgram(textureShader);
         glBindVertexArray(pillarVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -737,6 +698,8 @@ int main(void)
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
         // Potpis - 2D HUD
+        glUseProgram(textureShader);
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -776,9 +739,6 @@ int main(void)
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &cubeVBO);
-
-    glDeleteVertexArrays(1, &frameVAO);
-    glDeleteBuffers(1, &frameVBO);
 
     glDeleteVertexArrays(1, &pillarVAO);
     glDeleteBuffers(1, &pillarVBO);
