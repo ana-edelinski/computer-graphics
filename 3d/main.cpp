@@ -23,9 +23,9 @@
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
 
-float radius = 2.0f;       // udaljenost kamere od centra
-float camAngle = glm::radians(135.0f);    // ugao u XZ ravni
-float camHeight = 1.5f;    // visina kamere (Y osa)
+float radius = 2.0f;      
+float camAngle = glm::radians(135.0f);  
+float camHeight = 1.5f;   
 
 struct FallingCube {
     glm::vec3 position;
@@ -89,9 +89,9 @@ int main(void)
     }
 
     //postavljanje openGL verzije i profila
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);  //major verzija 3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);  //minor verzija 3
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  //koristi core profil
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  
 
     GLFWwindow* window;
     unsigned int wWidth = 800;
@@ -127,49 +127,48 @@ int main(void)
     const int TARGET_FPS = 60;
     const double TARGET_FRAME_TIME = 1.0 / TARGET_FPS;
 
-    double previousTime = glfwGetTime();    //zapamti kad sam krenula da crtam prvi frejm
+    double previousTime = glfwGetTime();   
 
     float cube[] = {
-        //  Pozicija            // UV
-    // Front
-    -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
-     0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-     0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
-     0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
-    -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+        // Front
+        -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+         0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+         0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+         0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+        -0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
+        -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
 
-    // Back
-    -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
-     0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-     0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-    -0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
-    -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+        // Back
+        -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+         0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
+         0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+         0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+        -0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+        -0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
 
-    // Left
-    -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
-    -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-    -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+        // Left
+        -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
+        -0.5f,  0.25f, -0.5f,   0.0f, 1.0f,
+        -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
+        -0.5f, -0.25f, -0.5f,   0.0f, 0.0f,
+        -0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+        -0.5f,  0.25f,  0.5f,   1.0f, 1.0f,
 
-    // Right
-     0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
-     0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
-     0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
-     0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
-     0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
-     0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
+        // Right
+         0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
+         0.5f,  0.25f, -0.5f,   1.0f, 1.0f,
+         0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+         0.5f, -0.25f, -0.5f,   1.0f, 0.0f,
+         0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+         0.5f,  0.25f,  0.5f,   0.0f, 1.0f,
 
-     // Bottom
-     -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
-      0.5f, -0.25f, -0.5f,   1.0f, 1.0f,
-      0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-      0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
-     -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
-     -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
+         // Bottom
+         -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
+          0.5f, -0.25f, -0.5f,   1.0f, 1.0f,
+          0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+          0.5f, -0.25f,  0.5f,   1.0f, 0.0f,
+         -0.5f, -0.25f,  0.5f,   0.0f, 0.0f,
+         -0.5f, -0.25f, -0.5f,   0.0f, 1.0f,
     };
 
     float waterPlane[] = {
@@ -182,7 +181,6 @@ int main(void)
     };
 
     float groundPlane[] = {
-        // pozicija               // boja (sivkasto-zelena RGBA)
         -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
          5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
          5.0f, -0.25f,  5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
@@ -308,7 +306,6 @@ int main(void)
     };
 
     float animatedCubes[] = {
-        // Pozicija           // Boja (svetla plava, RGBA)
         // Front
         -0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
          0.5f, -0.5f,  0.5f,   0.35f, 0.65f, 1.0f, 1.0f,
@@ -360,7 +357,7 @@ int main(void)
 
     float signatureVertices[] =
     {
-        //  X       Y      U     V
+        //  X     Y       U     V
         -0.1f,  0.9f,   0.0f, 0.0f,
          0.4f,  0.9f,   1.0f, 0.0f,
         -0.1f,  1.0f,   0.0f, 1.0f,
@@ -399,6 +396,8 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(0);
+
     // gornji deo osnove, okvir
     unsigned int frameVAO, frameVBO;
     glGenVertexArrays(1, &frameVAO);
@@ -412,6 +411,8 @@ int main(void)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
 
     // stub
     unsigned int pillarVAO, pillarVBO;
@@ -427,6 +428,8 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(0);
+
     // piramida na vrhu stuba
     unsigned int pyramidVAO, pyramidVBO;
     glGenVertexArrays(1, &pyramidVAO);
@@ -440,6 +443,8 @@ int main(void)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
 
     // kockice koje iskacu
     unsigned int animCubeVAO, animCubeVBO;
@@ -456,6 +461,8 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // inCol
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(0);
+
     // tlo
     unsigned int groundVAO, groundVBO;
     glGenVertexArrays(1, &groundVAO);
@@ -470,7 +477,7 @@ int main(void)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float))); // boja
     glEnableVertexAttribArray(1);
 
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
 
     // nebo
     unsigned int skyboxVAO, skyboxVBO;
@@ -484,7 +491,7 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
 
     unsigned int signatureVAO, signatureVBO;
     glGenVertexArrays(1, &signatureVAO);
@@ -499,22 +506,13 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
-
-    // zavrsni unbind
     glBindVertexArray(0);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++            UNIFORME            +++++++++++++++++++++++++++++++++++++++++++++++++
 
     glm::mat4 model = glm::mat4(1.0f); //Matrica transformacija - mat4(1.0f) generise jedinicnu matricu
     unsigned int modelLoc = glGetUniformLocation(unifiedShader, "uM");  //lokacija uniforme
-    
-    glm::mat4 view; //Matrica pogleda (kamere)
-    //view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // lookAt(Gdje je kamera, u sta kamera gleda, jedinicni vektor pozitivne Y ose svijeta  - ovo rotira kameru)
-    //view = glm::lookAt(glm::vec3(1.5f, 1.0f, 2.0f),  // kamera iz ugla
-    //    glm::vec3(0.0f, 0.0f, 0.0f),  // centar scene
-    //    glm::vec3(0.0f, 1.0f, 0.0f)); // Y je gore
     unsigned int viewLoc = glGetUniformLocation(unifiedShader, "uV");
     
     glm::mat4 projectionP = glm::perspective(glm::radians(90.0f), (float)wWidth / (float)wHeight, 0.1f, 100.0f); //Matrica perspektivne projekcije (FOV, Aspect Ratio, prednja ravan, zadnja ravan)
@@ -524,14 +522,14 @@ int main(void)
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
     glUseProgram(unifiedShader); //Slanje default vrijednosti uniformi
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); //(Adresa matrice, broj matrica koje saljemo, da li treba da se transponuju, pokazivac do matrica)
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //view
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));    //ortogonalna default
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));    //perspektivna default
 
     glClearColor(0.5, 0.5, 0.5, 1.0);   //boja pozadine
     glCullFace(GL_BACK);//Biranje lica koje ce se eliminisati (tek nakon sto ukljucimo Face Culling)
 
     glEnable(GL_DEPTH_TEST);
 
+    // ucitavanje tekstura
     unsigned int stoneTexture;
     glGenTextures(1, &stoneTexture);
     glBindTexture(GL_TEXTURE_2D, stoneTexture);
@@ -578,17 +576,16 @@ int main(void)
 
     while (!glfwWindowShouldClose(window))
     {
-        //u svakom frejmu while petlja
-        double currentTime = glfwGetTime(); //meri novo trenutno vreme
-        double deltaTime = currentTime - previousTime;  //racuna koliko je proslo od prvog frejma
-        previousTime = currentTime; //azurira previous time => pamti kada je poceo ovaj frejm da bi sledeci imao ispravnu osnovu
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - previousTime; 
+        previousTime = currentTime;
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             glfwSetWindowShouldClose(window, GL_TRUE);  //esc zatvara prozor
         }
 
-        //Testiranje dubine
+        //Testiranje dubine 
         if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         {
             glEnable(GL_DEPTH_TEST); //Ukljucivanje testiranja Z bafera
@@ -627,7 +624,7 @@ int main(void)
         float camX = sin(camAngle) * radius;
         float camZ = cos(camAngle) * radius;
 
-        view = glm::lookAt(glm::vec3(camX, camHeight, camZ),
+        glm::mat4 view = glm::lookAt(glm::vec3(camX, camHeight, camZ),
             glm::vec3(0.0f, 0.0f, 0.0f),     // gleda u centar
             glm::vec3(0.0f, 1.0f, 0.0f));    // Y je gore
 
@@ -640,38 +637,80 @@ int main(void)
         glDepthMask(GL_FALSE);
 
         glUseProgram(skyboxShader);
-        glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // bez translacije
+        glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); 
         glUniformMatrix4fv(skyboxViewLoc, 1, GL_FALSE, glm::value_ptr(skyboxView));
-        glUniformMatrix4fv(skyboxProjLoc, 1, GL_FALSE, glm::value_ptr(projectionP));
+        glUniformMatrix4fv(skyboxProjLoc, 1, GL_FALSE, glm::value_ptr(projectionP));    // mora ponovo jer je drugi shader
 
         glBindVertexArray(skyboxVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
 
-        glDepthMask(GL_TRUE);   // <<< obavezno
-        glDepthFunc(GL_LESS);   // <<< obavezno
+        glDepthMask(GL_TRUE);  
+        glDepthFunc(GL_LESS);  
 
-        // tlo
+        // UNIFIED SHADER
         glUseProgram(unifiedShader);
-        model = glm::mat4(1.0f);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        glBindVertexArray(groundVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-
-        // voda 
-        glUseProgram(unifiedShader);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionP));
 
+        // tlo
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+        glBindVertexArray(groundVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // voda 
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
         glBindVertexArray(waterVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        // kvadar - osnova fontane
+
+        // kockice koje se rotiraju i padaju u vodu
+        float deltaTimef = static_cast<float>(deltaTime);
+
+        cubeSpawnCooldown -= deltaTime;
+        if (cubeSpawnCooldown <= 0.0f) {
+            FallingCube newCube;
+            newCube.position = glm::vec3(0.0f, 0.65f, 0.0f);
+
+            newCube.velocity = glm::vec3(
+                (rand() % 100 - 50) / 350.0f,    
+                0.55f + (rand() % 100) / 800.0f,  
+                (rand() % 100 - 50) / 350.0f      
+            );
+
+            newCube.rotation = 0.0f;
+            cubes.push_back(newCube);
+            cubeSpawnCooldown = 0.05f;  
+        }
+
+        for (int i = 0; i < cubes.size(); ++i) {
+            cubes[i].position += cubes[i].velocity * deltaTimef;
+
+            cubes[i].velocity.y -= 1.0f * deltaTime;
+
+            if (cubes[i].position.y < 0.251f) {
+                cubes[i].position.y = 0.251f;
+                cubes[i].velocity = glm::vec3(0.0f); 
+            }
+
+            cubes[i].rotation += glm::radians(90.0f) * deltaTime;
+
+            glm::mat4 cubeModel = glm::mat4(1.0f);
+            cubeModel = glm::translate(cubeModel, cubes[i].position);
+            cubeModel = glm::rotate(cubeModel, cubes[i].rotation, glm::vec3(1.0f, 1.0f, 0.0f));
+            cubeModel = glm::scale(cubeModel, glm::vec3(0.07f));
+
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(cubeModel));
+            glBindVertexArray(animCubeVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        if (cubes.size() > 50)
+            cubes.erase(cubes.begin());
+
+        // TEXTURE SHADER ZA FONTANU
         glUseProgram(textureShader);
-        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
+
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uV"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uP"), 1, GL_FALSE, glm::value_ptr(projectionP));
 
@@ -679,6 +718,9 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, stoneTexture);
         glUniform1i(glGetUniformLocation(textureShader, "uTex"), 0);
 
+        // osnova (kvadar)
+        model = glm::mat4(1.0f); // podrazumevana transformacija
+        glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(model));
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -690,72 +732,15 @@ int main(void)
         glBindVertexArray(pillarVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // piramida na vrhu stuba
+        // piramida na vrhu
         glBindVertexArray(pyramidVAO);
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
-        // kockice koje iskacu
-        float deltaTimef = static_cast<float>(deltaTime);
-        glUseProgram(unifiedShader);
-
-        // Dodavanje novih kockica iz vrha piramide
-        cubeSpawnCooldown -= deltaTime;
-        if (cubeSpawnCooldown <= 0.0f) {
-            FallingCube newCube;
-            newCube.position = glm::vec3(0.0f, 0.65f, 0.0f);
-
-            // Brzina: navise + u stranu (nasumicno)
-            newCube.velocity = glm::vec3(
-                (rand() % 100 - 50) / 350.0f,     // X: -0.143 do 0.143
-                0.55f + (rand() % 100) / 800.0f,  // Y: 0.55 do 0.675
-                (rand() % 100 - 50) / 350.0f      // Z: -0.143 do 0.143
-            );
-
-            newCube.rotation = 0.0f;
-            cubes.push_back(newCube);
-            cubeSpawnCooldown = 0.05f;  // nova svakih 0.05s
-        }
-
-        // Azuriranje i crtanje kockica
-        for (int i = 0; i < cubes.size(); ++i) {
-            // Ažuriraj poziciju po paraboli
-            cubes[i].position += cubes[i].velocity * deltaTimef;
-
-            // Gravitacija
-            cubes[i].velocity.y -= 1.0f * deltaTime;
-
-            // Ogranici da ne padnu ispod vode
-            if (cubes[i].position.y < 0.251f) {
-                cubes[i].position.y = 0.251f;
-                cubes[i].velocity = glm::vec3(0.0f); // stop kretanja
-            }
-
-            // Rotacija
-            cubes[i].rotation += glm::radians(90.0f) * deltaTime;
-
-            // Model matrica
-            glm::mat4 cubeModel = glm::mat4(1.0f);
-            cubeModel = glm::translate(cubeModel, cubes[i].position);
-            cubeModel = glm::rotate(cubeModel, cubes[i].rotation, glm::vec3(1.0f, 1.0f, 0.0f));
-            cubeModel = glm::scale(cubeModel, glm::vec3(0.07f));  // male kocke
-
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(cubeModel));
-            glBindVertexArray(animCubeVAO);  // isti kao za bazu
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // Ogranici broj kocki u memoriji
-        if (cubes.size() > 50)
-            cubes.erase(cubes.begin());
-
         // Potpis - 2D HUD
-        glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glUseProgram(textureShader);
-
-        glm::mat4 orthoProj = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f); // leva, desna, donja, gornja
+        glm::mat4 orthoProj = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f); 
         glm::mat4 identity = glm::mat4(1.0f);
 
         glUniformMatrix4fv(glGetUniformLocation(textureShader, "uM"), 1, GL_FALSE, glm::value_ptr(identity));
@@ -769,19 +754,16 @@ int main(void)
         glBindVertexArray(signatureVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // Vrati dubinu za sledeci frejm
-        glDisable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
-
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        double frameEndTime = glfwGetTime();    //meri trenutno vreme na kraju frejma
-        double frameDuration = frameEndTime - currentTime;  //koliko je ukupno trajao ovaj frejm
+        // 60 FPS
+        double frameEndTime = glfwGetTime();  
+        double frameDuration = frameEndTime - currentTime; 
 
-        if (frameDuration < TARGET_FRAME_TIME) {    //ako je bio duzi od 1.0/60 ~ 16.67ms
+        if (frameDuration < TARGET_FRAME_TIME) {  
             std::this_thread::sleep_for(
-                std::chrono::duration<double>(TARGET_FRAME_TIME - frameDuration)    //usporava
+                std::chrono::duration<double>(TARGET_FRAME_TIME - frameDuration)    
             );
         }
 
