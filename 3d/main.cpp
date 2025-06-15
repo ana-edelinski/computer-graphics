@@ -179,8 +179,6 @@ int main(void)
           -0.5f,  0.25f,  0.5f,   0.0f, 0.0f
     };
 
-
-
     float waterPlane[] = {
         -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
         -0.3f,  0.251f,  0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
@@ -190,8 +188,6 @@ int main(void)
           0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f,
          -0.3f,  0.251f, -0.3f,   0.4f, 0.8f, 1.0f, 1.0f
     };
-
-
 
     float groundPlane[] = {
         -5.0f, -0.25f, -5.0f,     0.3f, 0.6f, 0.3f, 1.0f,
@@ -282,7 +278,6 @@ int main(void)
           -0.05f, 0.551f, -0.05f,   0.0f, 0.0f,
           -0.05f, 0.551f,  0.05f,   1.0f, 0.0f
     };
-
 
     float animatedCubes[] = {
         // Front
